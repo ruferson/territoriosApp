@@ -27,22 +27,26 @@ const AddTerritorio = () => {
 	};
 
 	const addTerritorioHandler = async () => {
-		if (descripcion !== '' && numViviendas !== '' && barrio !== '' && tipo !== '' && activo !== '') {
-			setLoading(true);
-			setMsg('')
-			try {
-				const territorioData = {
-					activo,
-					barrio,
-					descripcion,
-					negocios: tipo === 'negocios' ? true : false,
-					numViviendas,
+		if (numero !== '' && descripcion !== '' && numViviendas !== '' && barrio !== '' && tipo !== '' && activo !== '') {
+			if (parseInt(numero) >= 0 && parseInt(numViviendas) >= 1) {
+				setLoading(true);
+				setMsg('')
+				try {
+					const territorioData = {
+						activo,
+						barrio,
+						descripcion,
+						negocios: tipo === 'negocios' ? true : false,
+						numViviendas,
+					}
+					await setDoc(doc(db, "territorios", numero), territorioData);
+					setLoading(false);
+					navigation.goBack();
+				} catch (error) {
+					console.log(error)
 				}
-				await setDoc(doc(db, "territorios", numero), territorioData);
-				setLoading(false);
-				navigation.goBack();
-			} catch (error) {
-				console.log(error)
+			} else {
+				setMsg('¡Números incorrectos!')
 			}
 		} else {
 			setMsg('¡Faltan datos!')
@@ -51,7 +55,7 @@ const AddTerritorio = () => {
 
 	return (
 		<View style={globalStyles.contenedor}>
-		<Text style={globalStyles.version}>v1.0.0</Text>
+			<Text style={globalStyles.version}>v1.0.0</Text>
 			<ScrollView>
 				<View style={globalStyles.contenido}>
 					<Text style={globalStyles.subtitulo}>Nuevo Territorio</Text>
