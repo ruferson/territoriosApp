@@ -1,18 +1,16 @@
 import { StyleSheet } from 'react-native';
-import colors from './colors';
 
 const globalStyles = StyleSheet.create({
 	version: {
 		position: 'absolute',
-    left: 5,
-    bottom: 5,
+		right: 2,
+		fontSize: 10,
 	},
 	contenedor: {
 		flex: 1,
-		backgroundColor: colors.light.basic,
 	},
 	contenido: {
-		marginTop: '11%',
+		marginTop: '7%',
 		flexDirection: 'column',
 		marginHorizontal: '7%',
 		flex: 1,
@@ -22,36 +20,30 @@ const globalStyles = StyleSheet.create({
 		marginBottom: 20,
 		fontSize: 36,
 		fontWeight: 'bold',
-		color: colors.light.text
 	},
 	subtitulo: {
 		textAlign: 'center',
 		marginBottom: 20,
 		fontSize: 26,
 		fontWeight: 'bold',
-		color: colors.light.textLow,
 		marginTop: 20
 	},
 	subSubtitulo: {
 		marginBottom: 20,
 		fontSize: 19,
 		fontWeight: 'bold',
-		color: colors.light.textLow,
 		marginTop: 20
 	},
 	texto: {
 		fontSize: 17,
-		color: colors.light.textLow,
 	},
 	label: {
 		marginBottom: 10,
 		fontSize: 15,
 		fontWeight: 'bold',
-		color: colors.light.textLow,
 		marginTop: 5
 	},
 	input: {
-		color: colors.light.text,
 		marginBottom: '4%'
 	},
 	boton: {
@@ -59,13 +51,18 @@ const globalStyles = StyleSheet.create({
 		marginBottom: '10%',
 		fontSize: 40
 	},
+	botonDerecha: {
+		borderRadius: 50,
+		marginTop: '2%',
+		marginBottom: '4%',
+		width: 55,
+		height: 50
+	},
 	botonTexto: {
 		textTransform: 'uppercase',
 		fontWeight: 'bold',
-		color: colors.light.text,
 	},
 	enlace: {
-		color: colors.light.text,
 		marginTop: 60,
 		textAlign: 'center',
 		fontWeight: 'bold',

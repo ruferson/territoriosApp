@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getTerritorios } from '../services/getTerritorios';
 
 const useTerritorios = (update: number) => {
-	const [territorios, setTerritorios] = useState<any>([]);
+	const [territorios, setTerritorios] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	const obtainTerritorios = () => {
