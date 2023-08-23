@@ -1,19 +1,39 @@
 import { useNavigation } from '@react-navigation/native';
 import { deleteDoc, doc } from 'firebase/firestore';
-import React, { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, Dialog, Portal, Text } from 'react-native-paper';
-import { db } from '../firebase/firebaseConfig';
+import { auth, db } from '../firebase/firebaseConfig';
 import useTerritorio from '../hooks/useTerritorio';
-import colors from '../styles/colors';
 import { default as globalStyles } from '../styles/global';
+import { darkTheme, lightTheme } from '../styles/theme';
+import Historial from '../components/Historial';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const TerritorioDetalle = ({ route }: { route: any }) => {
-	const { numero } = route.params;
+	const colorScheme = useColorScheme();
+	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+	const { numero, update, setUpdate } = route.params;
 	const [deleting, setDeleting] = useState(false);
-	const { territorioData, loadingTerritorio } = useTerritorio(numero);
 	const [loadingDelete, setLoadingDelete] = useState(false);
-	const navigation = useNavigation()
+	const [updateTerritorio, setUpdateTerritorio] = useState(0);
+	const { territorioData, loadingTerritorio } = useTerritorio(numero, updateTerritorio);
+	const navigation = useNavigation();
+	const [refreshing, setRefreshing] = useState(false);
+
+	onAuthStateChanged(auth, (currentUser) => {
+		if (auth === null) {
+			navigation.navigate('Home');
+		}
+	});
+
+	useEffect(() => {
+		setRefreshing(loadingTerritorio);
+	}, [loadingTerritorio]);
+
+	const onRefresh = () => {
+		setUpdateTerritorio(updateTerritorio + 1);
+  };
 
 	const borrarTerritorio = async () => {
 		try {
@@ -21,6 +41,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 			await deleteDoc(doc(db, "territorios", numero));
 			setLoadingDelete(false)
 			setDeleting(false)
+			setUpdate(update + 1)
 			navigation.goBack();
 		} catch (error) {
 			setLoadingDelete(false)
@@ -29,23 +50,21 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 	}
 
 	return (
-		<View style={globalStyles.contenedor}>
-		<Text style={globalStyles.version}>v1.0.0</Text>
-			<ScrollView>
-				<Portal theme={{
-					onPrimaryContainer: colors.light.darkPrimary,
-					elevation: {
-						level2: colors.light.basic,
-					}
-				}}>
-					<Dialog visible={deleting} style={{ backgroundColor: colors.light.basic }} onDismiss={() => setDeleting(false)}>
+		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+			<ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+        }
+			>
+				<Portal>
+					<Dialog visible={deleting} onDismiss={() => setDeleting(false)}>
 						<Dialog.Title>¿Deseas borrar este territorio?</Dialog.Title>
 						<Dialog.Content>
 							<Text variant="bodyMedium">No lo podrás recuperar.</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
 							<Button textColor='darkred' onPress={() => borrarTerritorio()}>Sí, borrar</Button>
-							<Button textColor={colors.light.text} onPress={() => setDeleting(false)}>
+							<Button onPress={() => setDeleting(false)}>
 								<Text style={{ fontSize: 20, fontWeight: 'bold' }}>No, cancelar</Text>
 							</Button>
 						</Dialog.Actions>
@@ -56,9 +75,19 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 					</Dialog>
 				</Portal>
 				{loadingTerritorio
-					? (<ActivityIndicator style={{ marginTop: '20%' }} animating={loadingTerritorio} color={colors.light.primary} />)
+					? (<ActivityIndicator style={{ marginTop: '20%' }} animating={loadingTerritorio} color={theme.colors.primary} />)
 					: (
 						<View style={globalStyles.contenido}>
+							<Button
+								style={[globalStyles.boton, { marginBottom: 3 }]}
+								icon=""
+								buttonColor={'darkred'}
+								mode="contained"
+								compact
+								onPress={() => setDeleting(true)}
+							>
+								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Eliminar Territorio</Text>
+							</Button>
 							<Text style={globalStyles.subtitulo}>Nº{numero}</Text>
 							{territorioData.img ?
 								(
@@ -74,16 +103,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 							<Text style={globalStyles.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
 							<Text style={globalStyles.subSubtitulo}>Dado de Baja</Text>
 							<Text style={globalStyles.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
-							<Button
-								style={[globalStyles.boton, { marginTop: '10%' }]}
-								icon=""
-								buttonColor={'darkred'}
-								mode="contained"
-								compact
-								onPress={() => setDeleting(true)}
-							>
-								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Eliminar Territorio</Text>
-							</Button>
+							<Historial id={numero} updatedTerritorio={update}></Historial>
 						</View>
 					)
 				}

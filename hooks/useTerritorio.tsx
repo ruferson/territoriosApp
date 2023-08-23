@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getTerritorio } from '../services/getTerritorio';
 
-const useTerritorio = (territorioID: string) => {
+const useTerritorio = (territorioID: string, updateTerritorio?: number) => {
 
 	const [territorioData, setTerritorio] = useState();
 	const [loadingTerritorio, setLoadingTerritorio] = useState(true)
@@ -16,7 +16,7 @@ const useTerritorio = (territorioID: string) => {
 			setLoadingTerritorio(false)
 		}
 	}
-	useEffect(obtenerTerritorio, [territorioID]);
+	useEffect(obtenerTerritorio, [territorioID, updateTerritorio]);
 
 	return { territorioData, loadingTerritorio }
 }

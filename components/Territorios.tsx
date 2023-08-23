@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, DataTable, FAB, Text } from 'react-native-paper';
 import useTerritorios from '../hooks/useTerritorios';
-import colors from '../styles/colors';
 import globalStyles from '../styles/global';
+import { darkTheme, lightTheme } from '../styles/theme';
 
 const Territorios = () => {
+	const colorScheme = useColorScheme();
+	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [page, setPage] = useState<number>(0);
 	const numberOfItemsPerPageList = [4, 8];
 	const [territoriosPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[1]);
@@ -15,45 +17,47 @@ const Territorios = () => {
 	const from = page * territoriosPerPage;
 	const to = Math.min((page + 1) * territoriosPerPage, territorios.length);
 	const navigation = useNavigation();
+	const [refreshing, setRefreshing] = useState(false);
 
 	useEffect(() => {
+		setRefreshing(loading);
 		setPage(0);
 	}, [territoriosPerPage, loading]);
 
-	useEffect(() => {
-		const unsubscribe = navigation.addListener('focus', () => {
-			setUpdate(update + 1)
-		});
+	const onRefresh = () => {
+		setUpdate(update + 1);
+  };
 
-		// Return the function to unsubscribe from the event so it gets removed on unmount
-		return unsubscribe;
-	}, [navigation]);
+	const noExisteTer = (numero: string) => {
+		const existeTer = territorios.find((value) => value.id === numero);
+		return !existeTer;
+	}
 
 	return (
-		<View style={globalStyles.contenedor}>
-		<Text style={globalStyles.version}>v1.0.0</Text>
+		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 			<FAB
 				icon="plus"
 				theme={{
-					colors: {
-						onPrimaryContainer: colors.light.basic,
-						primaryContainer: colors.light.primary,
-					},
 					roundness: 3,
 				}}
 				style={globalStyles.fab}
 				label="Añadir Territorio"
-				onPress={() => navigation.navigate('AddTerritorio')}
+				onPress={() => navigation.navigate('AddTerritorio', { update, setUpdate: (upd: number) => setUpdate(upd), noExisteTer })}
 			/>
-			<View style={globalStyles.contenido}>
+			<ScrollView
+				style={globalStyles.contenido}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+        }
+			>
 				<Text style={globalStyles.subtitulo}>Lista de Territorios</Text>
 				{loading
-					? (<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={colors.light.primary} />)
-					: (
+					? (<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />)
+					: territorios.length ? (
 						<DataTable>
 							<DataTable.Header
 								style={{
-									borderColor: colors.light.primary
+									borderColor: theme.colors.primary
 								}}
 							>
 								<DataTable.Title>Número</DataTable.Title>
@@ -62,12 +66,12 @@ const Territorios = () => {
 								<DataTable.Title numeric>Activo</DataTable.Title>
 							</DataTable.Header>
 
-							{territorios.slice(from, to).map((item: any) => (
+							{territorios.sort((a, b) => parseInt(a.id) - parseInt(b.id)).slice(from, to).map((item: any) => (
 								<DataTable.Row key={item.id}
 									style={{
-										borderColor: colors.light.primary
+										borderColor: theme.colors.primary
 									}}
-									onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id })}
+									onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id, update, setUpdate: (upd: number) => setUpdate(upd) })}
 								>
 									<DataTable.Cell>{item.id}</DataTable.Cell>
 									<DataTable.Cell>{item.barrio}</DataTable.Cell>
@@ -87,19 +91,13 @@ const Territorios = () => {
 								showFastPaginationControls
 								selectPageDropdownLabel={'Territorios por página'}
 								theme={{
-									colors: {
-										primary: colors.light.darkPrimary,
-										elevation: {
-											level2: colors.light.basic,
-										}
-									},
 									roundness: 20,
 								}}
 							/>
 						</DataTable>
-					)
+					) : <Text style={globalStyles.subSubtitulo}>No hay territorios disponibles</Text>
 				}
-			</View>
+			</ScrollView>
 		</View>
 	);
 }
