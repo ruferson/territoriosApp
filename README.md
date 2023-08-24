@@ -1,3 +1,13 @@
+Esta aplicación se encuentra en BETA. Aun podría presentar bugs que impidan su correcto funcionamiento.
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
