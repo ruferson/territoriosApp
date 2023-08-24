@@ -77,7 +77,6 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 				console.log(error)
 				setMsg('¡Ha habido un error!')
 				setLoading(false);
-				auth.signOut();
 			}
 		} else {
 			setLoading(false);
@@ -166,7 +165,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 				compact
 				onPress={() => editarHistorial()}
 			>
-				<Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold' }}>Editar</Text>
+				<Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold' }}>Guardar</Text>
 			</Button>
 		</View>
 	);

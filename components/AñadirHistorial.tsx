@@ -70,7 +70,6 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 				console.log(error)
 				setMsg('¡Ha habido un error!')
 				setLoading(false);
-				auth.signOut();
 			}
 		} else {
 			setLoading(false);

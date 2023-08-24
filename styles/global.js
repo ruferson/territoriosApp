@@ -12,7 +12,7 @@ const globalStyles = StyleSheet.create({
 	contenido: {
 		marginTop: '7%',
 		flexDirection: 'column',
-		marginHorizontal: '7%',
+		marginHorizontal: '5%',
 		flex: 1,
 	},
 	titulo: {
