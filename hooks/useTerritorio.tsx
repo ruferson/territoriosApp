@@ -7,14 +7,11 @@ const useTerritorio = (territorioID: string, updateTerritorio?: number) => {
 	const [loadingTerritorio, setLoadingTerritorio] = useState(true)
 
 	const obtenerTerritorio = () => {
-		if (territorioID) {
-			getTerritorio(territorioID).then((nextTerritorio: any) => {
-				setTerritorio(nextTerritorio);
-				setLoadingTerritorio(false)
-			});
-		} else {
+		setLoadingTerritorio(true)
+		getTerritorio(territorioID).then((nextTerritorio: any) => {
+			setTerritorio(nextTerritorio);
 			setLoadingTerritorio(false)
-		}
+		});
 	}
 	useEffect(obtenerTerritorio, [territorioID, updateTerritorio]);
 

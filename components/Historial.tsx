@@ -7,7 +7,7 @@ import { darkTheme, lightTheme } from '../styles/theme';
 import AñadirHistorial from './AñadirHistorial';
 import TarjetaHistorial from './TarjetaHistorial';
 
-const Historial = ({ id, updatedTerritorio }: { id: string, updatedTerritorio: number }) => {
+const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [update, setUpdate] = useState(0);
@@ -19,6 +19,7 @@ const Historial = ({ id, updatedTerritorio }: { id: string, updatedTerritorio: n
 		if (!loadingHistorico) {
 			const terminado = historico.length === 0 || !historico.find((value: any) => !value.fechaEntrada);
 			setTerminado(terminado);
+			setTieneHistorico(historico.length > 0);
 		}
 	}, [historico, loadingHistorico]);
 
@@ -80,7 +81,7 @@ const Historial = ({ id, updatedTerritorio }: { id: string, updatedTerritorio: n
 		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 			<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
 				<Text style={[globalStyles.subSubtitulo, {}]}>
-					Historial
+					Historial:
 				</Text>
 				{terminado ?
 					<IconButton

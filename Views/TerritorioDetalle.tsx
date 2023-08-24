@@ -1,27 +1,29 @@
 import { useNavigation } from '@react-navigation/native';
+import { onAuthStateChanged } from 'firebase/auth';
 import { deleteDoc, doc } from 'firebase/firestore';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, Dialog, Portal, Text } from 'react-native-paper';
+import Historial from '../components/Historial';
 import { auth, db } from '../firebase/firebaseConfig';
 import useTerritorio from '../hooks/useTerritorio';
 import { default as globalStyles } from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import Historial from '../components/Historial';
-import { onAuthStateChanged } from 'firebase/auth';
 
 const TerritorioDetalle = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const { numero, update, setUpdate } = route.params;
+
+	const navigation = useNavigation();
 	const [deleting, setDeleting] = useState(false);
 	const [loadingDelete, setLoadingDelete] = useState(false);
 	const [updateTerritorio, setUpdateTerritorio] = useState(0);
 	const { territorioData, loadingTerritorio } = useTerritorio(numero, updateTerritorio);
-	const navigation = useNavigation();
+	const [tieneHistorico, setTieneHistorico] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 
-	onAuthStateChanged(auth, (currentUser) => {
+	onAuthStateChanged(auth, () => {
 		if (auth === null) {
 			navigation.navigate('Home');
 		}
@@ -33,34 +35,36 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 
 	const onRefresh = () => {
 		setUpdateTerritorio(updateTerritorio + 1);
-  };
+	};
 
 	const borrarTerritorio = async () => {
 		try {
-			setLoadingDelete(true)
+			setLoadingDelete(true);
 			await deleteDoc(doc(db, "territorios", numero));
-			setLoadingDelete(false)
-			setDeleting(false)
-			setUpdate(update + 1)
+			setLoadingDelete(false);
+			setDeleting(false);
+			setUpdate(update + 1);
 			navigation.goBack();
 		} catch (error) {
-			setLoadingDelete(false)
-			console.log(error)
+			setLoadingDelete(false);
+			console.log(error);
 		}
-	}
+	};
 
 	return (
 		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
-        }
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+				}
 			>
 				<Portal>
 					<Dialog visible={deleting} onDismiss={() => setDeleting(false)}>
-						<Dialog.Title>¿Deseas borrar este territorio?</Dialog.Title>
+						<Dialog.Title>¿Deseas borrar este territorio{tieneHistorico ? ' junto a su historial' : ''}?</Dialog.Title>
 						<Dialog.Content>
-							<Text variant="bodyMedium">No lo podrás recuperar.</Text>
+							<Text variant="bodyMedium">
+								No lo podrás recuperar.
+							</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
 							<Button textColor='darkred' onPress={() => borrarTerritorio()}>Sí, borrar</Button>
@@ -78,6 +82,11 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 					? (<ActivityIndicator style={{ marginTop: '20%' }} animating={loadingTerritorio} color={theme.colors.primary} />)
 					: (
 						<View style={globalStyles.contenido}>
+							<Text style={globalStyles.subtitulo}>Número {numero}</Text>
+							{territorioData.img ?
+								(
+									<Text style={[globalStyles.subSubtitulo, { marginVertical: 0 }]}>Imagen:</Text>
+								) : <></>}
 							<Button
 								style={[globalStyles.boton, { marginBottom: 3 }]}
 								icon=""
@@ -86,24 +95,29 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								compact
 								onPress={() => setDeleting(true)}
 							>
-								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Eliminar Territorio</Text>
+								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Eliminar</Text>
 							</Button>
-							<Text style={globalStyles.subtitulo}>Nº{numero}</Text>
-							{territorioData.img ?
-								(
-									<Text style={globalStyles.subSubtitulo}>Imagen</Text>
-								) : <></>}
-							<Text style={globalStyles.subSubtitulo}>Barrio</Text>
+							<Button
+								style={[globalStyles.boton, { marginBottom: 3 }]}
+								icon=""
+								buttonColor={theme.colors.secondary}
+								mode="contained"
+								compact
+								onPress={() => navigation.navigate('EditTerritorio', {updateTerritorio, setUpdateTerritorio, territorioData})}
+							>
+								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Editar</Text>
+							</Button>
+							<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Barrio:</Text>
 							<Text style={globalStyles.texto}>{territorioData.barrio}</Text>
-							<Text style={globalStyles.subSubtitulo}>Descripción</Text>
+							<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Descripción:</Text>
 							<Text style={globalStyles.texto}>{territorioData.descripcion}</Text>
-							<Text style={globalStyles.subSubtitulo}>Número de Viviendas</Text>
+							<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Número de Viviendas:</Text>
 							<Text style={globalStyles.texto}>{territorioData.numViviendas}</Text>
-							<Text style={globalStyles.subSubtitulo}>Tipo</Text>
+							<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Tipo:</Text>
 							<Text style={globalStyles.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
-							<Text style={globalStyles.subSubtitulo}>Dado de Baja</Text>
+							<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
 							<Text style={globalStyles.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
-							<Historial id={numero} updatedTerritorio={update}></Historial>
+							<Historial id={numero} updatedTerritorio={update} setTieneHistorico={setTieneHistorico}></Historial>
 						</View>
 					)
 				}
