@@ -107,7 +107,7 @@ const Territorios = () => {
 			<FAB
 				icon="plus"
 				theme={{
-					roundness: 3,
+					roundness: 10,
 				}}
 				style={globalStyles.fab}
 				label="Añadir Territorio"

@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { getHistorico } from '../services/getHistorico';
 
 
-const useHistorico = (id: string, update: number) => {
+const useHistorico = (id: string | null, update: number) => {
 	const [historico, setHistorico] = useState<any[]>([]);
 	const [loadingHistorico, setLoading] = useState(true);
 
 	const obtainHistorico = () => {
-		setLoading(true)
-		getHistorico(id).then(nextHist => {
-			setLoading(false);
-			setHistorico(nextHist);
-		});
+		if (id) {
+			setLoading(true)
+			getHistorico(id).then(nextHist => {
+				setLoading(false);
+				setHistorico(nextHist);
+			});
+		}
 	}
 	useEffect(obtainHistorico, [id, update]);
 

@@ -10,7 +10,7 @@ const globalStyles = StyleSheet.create({
 		flex: 1,
 	},
 	contenido: {
-		marginTop: '7%',
+		marginTop: '4%',
 		flexDirection: 'column',
 		marginHorizontal: '5%',
 		flex: 1,
@@ -74,6 +74,7 @@ const globalStyles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 30,
+		fontWeight: 'bold'
 	}
 });
 

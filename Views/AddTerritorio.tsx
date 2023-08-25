@@ -29,8 +29,8 @@ const AddTerritorio = ({ route }: { route: any }) => {
 	});
 
 	const addTerritorioHandler = async () => {
-		if (numero !== '' && descripcion !== '' && numViviendas !== '' && barrio !== '' && tipo !== '' && activo !== '') {
-			if (parseInt(numero) >= 0 && parseInt(numViviendas) >= 1) {
+		if (numero !== '' && barrio !== '' && tipo !== '' && activo !== '') {
+			if (parseInt(numero) >= 0) {
 				if (noExisteTer(numero)) {
 					setLoading(true);
 					setMsg('')
@@ -66,7 +66,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 				<View style={globalStyles.contenido}>
 					<Text style={globalStyles.subtitulo}>Nuevo Territorio</Text>
 					<TextInput
-						label="Número"
+						label="Número *"
 						value={numero}
 						keyboardType='numeric'
 						style={globalStyles.input}
@@ -74,7 +74,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						onChangeText={text => setNumero(text.replace(/[^0-9]/g, ''))}
 					/>
 					<TextInput
-						label="Barrio"
+						label="Barrio *"
 						value={barrio}
 						style={globalStyles.input}
 						mode='outlined'
@@ -129,6 +129,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						style={{ marginBottom: 20 }}
 					/>
 					{msg !== '' ? (<Text style={{ color: 'darkred', fontSize: 20, textAlign: 'center' }}>{msg}</Text>) : <></>}
+					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 					<Button
 						style={globalStyles.boton}
 						icon=""
