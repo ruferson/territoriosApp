@@ -96,8 +96,8 @@ export const darkTheme = {
     error: "#BA1A1A",  // Color de error: Rojo oscuro
     onError: "#FFFFFF",  // Texto blanco para contraste en el color de error
 
-    errorContainer: "#FFDAD6",  // Contenedor del color de error: Tonos rojizos suaves
-    onErrorContainer: "#410002",  // Texto oscuro para contraste en el contenedor del color de error
+    errorContainer: "#41110b",  // Contenedor del color de error: Tonos rojizos suaves
+    onErrorContainer: "#FFFFFF",  // Texto oscuro para contraste en el contenedor del color de error
 
     background: "#1D1B1E",  // Fondo principal: Tonos oscuros
     onBackground: "#E3EBE6",  // Texto claro para contraste en el fondo principal

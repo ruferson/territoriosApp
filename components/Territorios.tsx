@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Card, DataTable, FAB, Text } from 'react-native-paper';
@@ -12,6 +12,7 @@ const Territorios = () => {
 	const [page, setPage] = useState<number>(0);
 	const numberOfItemsPerPageList = [4, 8];
 	const [territoriosPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[1]);
+
 	const [update, setUpdate] = useState<number>(0);
 	const { territorios, loading } = useTerritorios(update)
 	const from = page * territoriosPerPage;
@@ -55,7 +56,7 @@ const Territorios = () => {
 						>
 
 							<Card
-							style={{height: '97%'}}>
+								style={{ height: '97%' }}>
 								<Card.Content>
 									<DataTable>
 										<DataTable.Header
@@ -66,20 +67,21 @@ const Territorios = () => {
 											<DataTable.Title textStyle={{ fontSize: 15 }}>Número</DataTable.Title>
 											<DataTable.Title textStyle={{ fontSize: 15 }}>Barrio</DataTable.Title>
 											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Tipo</DataTable.Title>
-											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Activo</DataTable.Title>
+											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Baja</DataTable.Title>
 										</DataTable.Header>
 
 										{territorios.sort((a, b) => parseInt(a.id) - parseInt(b.id)).slice(from, to).map((item: any) => (
 											<DataTable.Row key={item.id}
 												style={{
-													borderColor: theme.colors.primary
+													borderColor: theme.colors.primary,
+													...!item.activo && { backgroundColor: theme.colors.errorContainer },
 												}}
-												onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id, update, setUpdate: (upd: number) => setUpdate(upd) })}
+												onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id, update: () => setUpdate(currUpdate => currUpdate + 1) })}
 											>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.id}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.barrio}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.negocios ? 'Negocios' : 'Normal'}</DataTable.Cell>
-												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.activo ? 'Sí' : 'No'}</DataTable.Cell>
+												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.activo ? 'No' : 'Sí'}</DataTable.Cell>
 											</DataTable.Row>
 										))}
 
@@ -101,7 +103,7 @@ const Territorios = () => {
 								</Card.Content>
 							</Card>
 						</View>
-					) : <Text style={globalStyles.subSubtitulo}>No hay territorios disponibles</Text>
+					) : <Text style={[globalStyles.subSubtitulo, { textAlign: 'center' }]}>No hay territorios disponibles</Text>
 				}
 			</ScrollView>
 			<FAB
@@ -112,7 +114,7 @@ const Territorios = () => {
 				style={globalStyles.fab}
 				label="Añadir Territorio"
 				onPress={() => navigation.navigate('AddTerritorio', {
-					update, setUpdate: (upd: number) => setUpdate(upd), noExisteTer
+					update, setUpdate: () => setUpdate(currUpdate => currUpdate + 1), noExisteTer
 				})}
 			/>
 		</View>
