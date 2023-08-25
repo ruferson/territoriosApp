@@ -28,27 +28,23 @@ const EditTerritorio = ({ route }: { route: any }) => {
 	});
 
 	const addTerritorioHandler = async () => {
-		if (descripcion !== '' && numViviendas !== '' && barrio !== '' && tipo !== '' && activo !== '') {
-			if (parseInt(numViviendas) >= 1) {
-				setLoading(true);
-				setMsg('')
-				try {
-					const newTerritorioData = {
-						activo: activo === 'true',
-						barrio,
-						descripcion,
-						negocios: tipo === 'negocios',
-						numViviendas,
-					}
-					await updateDoc(doc(db, "territorios", territorioData.id), newTerritorioData);
-					setLoading(false);
-					setUpdateTerritorio(updateTerritorio + 1)
-					navigation.goBack();
-				} catch (error) {
-					console.log(error)
+		if (barrio !== '' && tipo !== '' && activo !== '') {
+			setLoading(true);
+			setMsg('')
+			try {
+				const newTerritorioData = {
+					activo: activo === 'true',
+					barrio,
+					descripcion,
+					negocios: tipo === 'negocios',
+					numViviendas,
 				}
-			} else {
-				setMsg('¡Números incorrectos!')
+				await updateDoc(doc(db, "territorios", territorioData.id), newTerritorioData);
+				setLoading(false);
+				setUpdateTerritorio(updateTerritorio + 1)
+				navigation.goBack();
+			} catch (error) {
+				console.log(error)
 			}
 		} else {
 			setMsg('¡Faltan datos!')
@@ -61,7 +57,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 				<View style={globalStyles.contenido}>
 					<Text style={globalStyles.subtitulo}>Editando Territorio Número {territorioData.id}</Text>
 					<TextInput
-						label="Barrio"
+						label="Barrio *"
 						value={barrio}
 						style={globalStyles.input}
 						mode='outlined'
@@ -116,6 +112,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 						style={{ marginBottom: 20 }}
 					/>
 					{msg !== '' ? (<Text style={{ color: 'darkred', fontSize: 20, textAlign: 'center' }}>{msg}</Text>) : <></>}
+					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 					<Button
 						style={globalStyles.boton}
 						icon=""

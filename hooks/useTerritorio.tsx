@@ -3,7 +3,7 @@ import { getTerritorio } from '../services/getTerritorio';
 
 const useTerritorio = (territorioID: string, updateTerritorio?: number) => {
 
-	const [territorioData, setTerritorio] = useState();
+	const [territorioData, setTerritorio] = useState<any>();
 	const [loadingTerritorio, setLoadingTerritorio] = useState(true)
 
 	const obtenerTerritorio = () => {

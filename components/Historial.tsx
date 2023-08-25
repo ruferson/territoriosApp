@@ -7,28 +7,21 @@ import { darkTheme, lightTheme } from '../styles/theme';
 import AñadirHistorial from './AñadirHistorial';
 import TarjetaHistorial from './TarjetaHistorial';
 
-const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
+const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioID }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-	const [update, setUpdate] = useState(0);
 	const [adding, setAdding] = useState(false);
-	const { historico, loadingHistorico } = useHistorico(id, update)
 	const [terminado, setTerminado] = useState(false);
 
 	useEffect(() => {
 		if (!loadingHistorico) {
 			const terminado = historico.length === 0 || !historico.find((value: any) => !value.fechaEntrada);
 			setTerminado(terminado);
-			setTieneHistorico(historico.length > 0);
 		}
 	}, [historico, loadingHistorico]);
 
-	useEffect(() => {
-		setUpdate(update + 1);
-	}, [updatedTerritorio]);
-
 	const entreFechas = (fecha: Date, idEditando?: string): boolean => {
-		const yaEsta = historico.find((value) => {
+		const yaEsta = historico.find((value: any) => {
 			if (idEditando) {
 				if (value.id === idEditando) {
 					return false;
@@ -44,7 +37,7 @@ const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
 	}
 
 	const contieneFechas = (salida: Date, entrada: Date, idEditando?: string): boolean => {
-		return !!historico.find((value) => {
+		return !!historico.find((value: any) => {
 			if (idEditando) {
 				if (value.id === idEditando) {
 					return false;
@@ -55,7 +48,7 @@ const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
 	}
 
 	const antiguaSinCerrar = (fecha: Date, idEditando?: string): boolean => {
-		const esAntiguo = historico.find((value) => {
+		const esAntiguo = historico.find((value: any) => {
 			if (idEditando) {
 				if (value.id === idEditando) {
 					return false;
@@ -67,8 +60,8 @@ const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
 	}
 
 	const getHistorial = (): ReactNode => {
-		const listaOrdenada = historico.sort((a, b) => b.fechaSalida.toDate().valueOf() - a.fechaSalida.toDate().valueOf());
-		return listaOrdenada.map((item, idx) => {
+		const listaOrdenada = historico.sort((a: any, b: any) => b.fechaSalida.toDate().valueOf() - a.fechaSalida.toDate().valueOf());
+		return listaOrdenada.map((item: any, idx: number) => {
 			return (
 				<TarjetaHistorial
 					key={idx} item={item} update={update} setUpdate={setUpdate} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
@@ -94,7 +87,7 @@ const Historial = ({ id, updatedTerritorio, setTieneHistorico }: any) => {
 					></IconButton> : <></>}
 			</View>
 			{adding ? <AñadirHistorial
-				id={id} setAdding={setAdding} setUpdate={setUpdate} update={update} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
+				id={territorioID} setAdding={setAdding} setUpdate={setUpdate} update={update} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
 			></AñadirHistorial> : <></>}
 
 			{!loadingHistorico ?
