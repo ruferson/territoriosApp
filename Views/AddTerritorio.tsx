@@ -44,7 +44,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						}
 						await setDoc(doc(db, "territorios", numero), territorioData);
 						setLoading(false);
-						setUpdate(update + 1)
+						setUpdate()
 						navigation.goBack();
 					} catch (error) {
 						console.log(error)

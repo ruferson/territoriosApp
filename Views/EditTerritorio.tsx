@@ -11,7 +11,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 const EditTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-	const { updateTerritorio, setUpdateTerritorio, territorioData } = route.params;
+	const { update, setUpdate, territorioData } = route.params;
 	const [descripcion, setDescripcion] = useState(territorioData.descripcion)
 	const [numViviendas, setNumViviendas] = useState(territorioData.numViviendas.toString())
 	const [barrio, setBarrio] = useState(territorioData.barrio)
@@ -41,7 +41,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 				}
 				await updateDoc(doc(db, "territorios", territorioData.id), newTerritorioData);
 				setLoading(false);
-				setUpdateTerritorio(updateTerritorio + 1)
+				setUpdate(update + 1)
 				navigation.goBack();
 			} catch (error) {
 				console.log(error)
