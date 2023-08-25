@@ -9,6 +9,7 @@ import { darkTheme, lightTheme } from './styles/theme';
 import { Text } from 'react-native-paper';
 import globalStyles from './styles/global';
 import EditTerritorio from './Views/EditTerritorio';
+import { appVersion } from './constants/appVersion';
 
 LogBox.ignoreLogs([
 	'Non-serializable values were found in the navigation state',
@@ -36,7 +37,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>v0.9.0</Text>
+						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
@@ -52,7 +53,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>v0.9.0</Text>
+						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
@@ -68,7 +69,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>v0.9.0</Text>
+						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
@@ -84,7 +85,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>v0.9.0</Text>
+						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 			</Stack.Navigator>
