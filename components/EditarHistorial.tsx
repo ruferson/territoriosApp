@@ -42,7 +42,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 
 			if (!fechaEntrada) {
 				if (antiguaSinCerrar(fechaSalida, item.id)) {
-					setMsg('No deberías editar un histórico anterior a los actuales y hacer que siga abierto.')
+					setMsg('No deberías volver a abrir un histórico antiguo.')
 					setLoading(false);
 					return;
 				}
@@ -139,6 +139,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 				inputMode="start"
 				mode='outlined'
 			/>
+			<Text style={globalStyles.label}>Tipo: *</Text>
 			<SegmentedButtons
 				value={campaña}
 				onValueChange={setCampaña}
@@ -156,6 +157,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 			/>
 			{msg !== '' ? (<Text style={{ color: 'darkred' }}>{msg}</Text>) : <></>}
 			{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
+					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 			<Button
 				style={globalStyles.boton}
 				icon=""

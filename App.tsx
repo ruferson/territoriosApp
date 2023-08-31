@@ -28,6 +28,8 @@ const App = () => {
 					name="Home"
 					component={Home}
 					options={{
+						animation: 'fade',
+						animationDuration: 3000,
 						title: 'Inicio',
 						headerStyle: {
 							backgroundColor: theme.colors.primary,
@@ -44,6 +46,8 @@ const App = () => {
 					name="AddTerritorio"
 					component={AddTerritorio}
 					options={{
+						animation: 'fade',
+						animationDuration: 3000,
 						title: 'Añadir Territorio',
 						headerStyle: {
 							backgroundColor: theme.colors.primary,
@@ -60,6 +64,8 @@ const App = () => {
 					name="TerritorioDetalle"
 					component={TerritorioDetalle}
 					options={{
+						animation: 'fade',
+						animationDuration: 3000,
 						title: 'Detalles del Territorio',
 						headerStyle: {
 							backgroundColor: theme.colors.primary,
@@ -76,6 +82,8 @@ const App = () => {
 					name="EditTerritorio"
 					component={EditTerritorio}
 					options={{
+						animation: 'fade',
+						animationDuration: 3000,
 						title: 'Editando Territorio',
 						headerStyle: {
 							backgroundColor: theme.colors.primary,

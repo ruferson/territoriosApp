@@ -1,12 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
+import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
-import { ScrollView, View, useColorScheme } from 'react-native';
+import { ScrollView, View, useColorScheme, Image, Platform } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
-import { auth, db } from '../firebase/firebaseConfig';
+import { auth, db, storage } from '../firebase/firebaseConfig';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import { onAuthStateChanged } from 'firebase/auth';
+import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { territorioInterface } from '../interfaces/interfaces';
 
 const AddTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
@@ -21,12 +24,30 @@ const AddTerritorio = ({ route }: { route: any }) => {
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
 	const navigation = useNavigation();
+	const [image, setImage] = useState<ImagePickerResponse>();
 
 	onAuthStateChanged(auth, (currentUser) => {
 		if (auth === null) {
 			navigation.navigate('Home');
 		}
 	});
+
+	const getBlobFromUri = async (uri: string): Blob => {
+		const blob: Blob = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = function () {
+				resolve(xhr.response);
+			};
+			xhr.onerror = function (e) {
+				reject(new TypeError("Network request failed"));
+			};
+			xhr.responseType = "blob";
+			xhr.open("GET", uri, true);
+			xhr.send(null);
+		});
+
+		return blob;
+	};
 
 	const addTerritorioHandler = async () => {
 		if (numero !== '' && barrio !== '' && tipo !== '' && activo !== '') {
@@ -35,12 +56,20 @@ const AddTerritorio = ({ route }: { route: any }) => {
 					setLoading(true);
 					setMsg('')
 					try {
-						const territorioData = {
-							activo,
+						const territorioData: territorioInterface = {
+							activo: activo === 'true',
 							barrio,
 							descripcion,
 							negocios: tipo === 'negocios',
 							numViviendas,
+						}
+						if (image) {
+							const uri: string = image.assets[0].uri || '';
+							const imgStorageRef = ref(storage, image.assets[0].fileName);
+							const imageBlob = await getBlobFromUri(uri)
+							await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: numero } });
+							const url = await getDownloadURL(imgStorageRef);
+							territorioData.img = {path: imgStorageRef.fullPath, url};
 						}
 						await setDoc(doc(db, "territorios", numero), territorioData);
 						setLoading(false);
@@ -85,6 +114,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						value={descripcion}
 						style={globalStyles.input}
 						mode='outlined'
+						numberOfLines={7}
 						multiline
 						onChangeText={text => setDescripcion(text)}
 					/>
@@ -96,7 +126,49 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						mode='outlined'
 						onChangeText={text => setNumVivienas(text.replace(/[^0-9]/g, ''))}
 					/>
-					<Text style={globalStyles.label}>Tipo:</Text>
+					<View style={{ ...image?.assets && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
+						{image?.assets
+							?
+							<Button
+								style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
+								icon=""
+								buttonColor={theme.colors.error}
+								mode="contained"
+								compact
+								onPress={() => {
+									setImage(undefined);
+								}}
+							>
+								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Borrar Imagen</Text>
+							</Button>
+							: <></>
+						}
+						<Button
+							style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, ...image?.assets ? { width: '48%' } : { width: '100%' } }]}
+							icon=""
+							buttonColor={theme.colors.secondary}
+							mode="contained"
+							compact
+							onPress={() => {
+								launchImageLibrary({ mediaType: 'photo', selectionLimit: 1, quality: 0.5 }, async (img) => {
+									setImage(img);
+								});
+							}}
+						>
+							<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>{image?.assets ? 'Cambiar' : 'Añadir'} Imagen</Text>
+						</Button>
+					</View>
+
+					{image?.assets
+						? (
+							<Image
+								style={{ width: '100%', height: 230, borderRadius: 5 }}
+								source={{ uri: image.assets[0].uri }}
+							/>
+						)
+						: (<></>)
+					}
+					<Text style={[globalStyles.label, { ...image?.assets && { marginTop: 20 } }]}>Tipo:</Text>
 					<SegmentedButtons
 						value={tipo}
 						onValueChange={setTipo}
@@ -131,14 +203,15 @@ const AddTerritorio = ({ route }: { route: any }) => {
 					{msg !== '' ? (<Text style={{ color: 'darkred', fontSize: 20, textAlign: 'center' }}>{msg}</Text>) : <></>}
 					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 					<Button
-						style={globalStyles.boton}
+						disabled={loading}
+						style={[globalStyles.boton, { marginTop: 30 }]}
 						icon=""
 						buttonColor={theme.colors.primary}
 						mode="contained"
 						compact
 						onPress={() => addTerritorioHandler()}
 					>
-						<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Añadir</Text>
+						<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Guardar</Text>
 					</Button>
 					<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />
 				</View>

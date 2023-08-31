@@ -11,7 +11,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [publicador, setPublicador] = useState('')
-	const [fechaSalida, setFechaSalida] = useState<Date>()
+	const [fechaSalida, setFechaSalida] = useState<Date>(new Date())
 	const [fechaEntrada, setFechaEntrada] = useState<Date>()
 	const [campaña, setCampaña] = useState('')
 	const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 	return (
 		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background, marginBottom: '1%' }]}>
 			<TextInput
-				label="Nombre Publicador"
+				label="Nombre Publicador *"
 				value={publicador}
 				style={globalStyles.input}
 				mode='outlined'
@@ -89,7 +89,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			<DatePickerInput
 				locale="es"
 				style={globalStyles.input}
-				label="Fecha de salida"
+				label="Fecha de salida *"
 				value={fechaSalida}
 				withModal={false}
 				onChange={(d) => setFechaSalida(d)}
@@ -116,6 +116,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 				inputMode="start"
 				mode='outlined'
 			/>
+			<Text style={globalStyles.label}>Tipo: *</Text>
 			<SegmentedButtons
 				value={campaña}
 				onValueChange={setCampaña}
@@ -133,6 +134,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			/>
 			{msg !== '' ? (<Text style={{ color: 'darkred' }}>{msg}</Text>) : <></>}
 			{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
+					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 			<Button
 				style={globalStyles.boton}
 				icon=""
