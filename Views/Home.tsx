@@ -9,11 +9,11 @@ import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
 const Home = () => {
-  const colorScheme = useColorScheme();
+	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [signedIn, setSignedIn] = useState(false);
 	const [loading, setLoading] = useState(true);
-	
+
 
 	onAuthStateChanged(auth, (currentUser) => {
 		if (auth !== null) {
@@ -28,7 +28,7 @@ const Home = () => {
 		{
 			loading
 				? (
-					<View style={[globalStyles.contenedor, {backgroundColor: theme.colors.background}]}>
+					<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 						<View style={globalStyles.contenido}>
 							<Text style={globalStyles.subtitulo}>
 								Probando a iniciar sesión...
@@ -40,7 +40,7 @@ const Home = () => {
 				: signedIn
 					? (
 						<>
-							<Territorios>Hola</Territorios>
+							<Territorios />
 						</>
 					)
 					: (

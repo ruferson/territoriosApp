@@ -1,5 +1,4 @@
-## Esta aplicación se encuentra en BETA. Aun podría presentar bugs que impidan su correcto funcionamiento.
-### v0.9.5
+## v1.0.0
 
 
 

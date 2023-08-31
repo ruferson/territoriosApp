@@ -83,6 +83,7 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 						containerColor={theme.colors.secondary}
 						iconColor={theme.colors.onSecondary}
 						size={40}
+						animated
 						onPress={() => setAdding(!adding)}
 					></IconButton> : <></>}
 			</View>

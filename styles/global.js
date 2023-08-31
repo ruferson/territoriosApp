@@ -75,6 +75,10 @@ const globalStyles = StyleSheet.create({
     right: 0,
     bottom: 30,
 		fontWeight: 'bold'
+	},
+	modal: {
+		marginHorizontal: 20,
+		marginVertical: 20
 	}
 });
 
