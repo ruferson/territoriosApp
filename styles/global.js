@@ -69,10 +69,17 @@ const globalStyles = StyleSheet.create({
 		fontSize: 18,
 		textTransform: 'uppercase'
 	},
-	fab: {
+	fabRight: {
 		position: 'absolute',
     margin: 16,
     right: 0,
+    bottom: 30,
+		fontWeight: 'bold'
+	},
+	fabLeft: {
+		position: 'absolute',
+    margin: 16,
+    left: 0,
     bottom: 30,
 		fontWeight: 'bold'
 	},
