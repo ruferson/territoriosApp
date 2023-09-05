@@ -83,6 +83,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 					descripcion,
 					negocios: tipo === 'negocios',
 					numViviendas,
+					uid: auth.currentUser?.uid
 				}
 				if (image) {
 					console.log(image, territorioData.img)

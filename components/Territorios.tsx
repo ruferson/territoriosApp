@@ -1,8 +1,10 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Card, Checkbox, DataTable, FAB, IconButton, Modal, Portal, Searchbar, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { ActivityIndicator, Avatar, Button, Card, DataTable, FAB, IconButton, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { esCaducado } from '../helpers/Calculos';
 import useTerritorios from '../hooks/useTerritorios';
+import { territorioInterface } from '../interfaces/interfaces';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
@@ -10,7 +12,7 @@ const Territorios = () => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [page, setPage] = useState<number>(0);
-	const numberOfItemsPerPageList = [4, 7];
+	const numberOfItemsPerPageList = [4, 6];
 	const [territoriosPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[1]);
 
 	const [update, setUpdate] = useState<number>(0);
@@ -23,6 +25,7 @@ const Territorios = () => {
 	const [filtroBarrio, setFiltroBarrio] = useState<string>('');
 	const [filtroViv, setFiltroViv] = useState<string>('');
 	const [filtroBaja, setFiltroBaja] = useState<string[]>([]);
+	const [filtroNegocios, setFiltroNegocios] = useState<string[]>([]);
 	const navigation = useNavigation();
 
 	useEffect(() => {
@@ -52,6 +55,9 @@ const Territorios = () => {
 		filteredTerritorios = filtroBaja.length === 1
 			? filteredTerritorios.filter((ter) => ter.activo === (filtroBaja[0] === 'activo'))
 			: filteredTerritorios;
+		filteredTerritorios = filtroNegocios.length === 1
+			? filteredTerritorios.filter((ter) => ter.negocios === (filtroNegocios[0] === 'negocios'))
+			: filteredTerritorios;
 		setTerritoriosList(filteredTerritorios);
 	}
 
@@ -62,14 +68,36 @@ const Territorios = () => {
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
 			>
-				<View style={[globalStyles.contenido, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+				<View style={[globalStyles.contenido, { marginTop: 30, marginHorizontal: 80, flexDirection: 'row', justifyContent: 'space-between' }]}>
+					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
+						colors: {
+							primary: theme.colors.primary,
+						},
+					}} />
+					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
+						colors: {
+							primary: theme.colors.expired,
+						},
+					}} />
+					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
+						colors: {
+							primary: theme.colors.error,
+						},
+					}} />
+				</View>
+				<View style={[globalStyles.contenido, { marginTop: 2, marginHorizontal: 60, flexDirection: 'row', justifyContent: 'space-between' }]}>
+					<Text>Disponible</Text>
+					<Text style={{ marginLeft: 15 }}>Caducado</Text>
+					<Text>Dado de baja</Text>
+				</View>
+				<View style={[globalStyles.contenido, { marginTop: 0, flexDirection: 'row', justifyContent: 'space-between' }]}>
 					<Text style={[globalStyles.subtitulo, { textAlign: 'right', width: '70%' }]}>
 						Lista de Territorios
 					</Text>
 					<IconButton
 						icon={filtrando ? 'filter-minus' : 'filter-plus'}
 						iconColor={theme.colors.secondary}
-						style={{top: 10, right: 20}}
+						style={{ top: 10, right: 20 }}
 						size={35}
 						rippleColor={theme.colors.secondaryContainer + '99'}
 						animated
@@ -95,6 +123,7 @@ const Territorios = () => {
 								value={filtroViv}
 							/>
 							<SegmentedButtons
+								style={{ marginBottom: 10 }}
 								value={filtroBaja}
 								multiSelect
 								onValueChange={setFiltroBaja}
@@ -111,6 +140,23 @@ const Territorios = () => {
 									},
 								]}
 							/>
+							<SegmentedButtons
+								value={filtroNegocios}
+								multiSelect
+								onValueChange={setFiltroNegocios}
+								buttons={[
+									{
+										value: 'normal',
+										label: 'Normal',
+										showSelectedCheck: true
+									},
+									{
+										value: 'negocios',
+										label: 'Negocios',
+										showSelectedCheck: true
+									},
+								]}
+							/>
 							<View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
 								<Button
 									style={[globalStyles.boton, { marginBottom: 15, width: '48%' }]}
@@ -120,6 +166,7 @@ const Territorios = () => {
 									compact
 									onPress={() => {
 										setFiltroBaja([]);
+										setFiltroNegocios([]);
 										setFiltroBarrio('');
 										setFiltroViv('');
 										setTerritoriosList(territorios);
@@ -165,21 +212,21 @@ const Territorios = () => {
 											<DataTable.Title textStyle={{ fontSize: 15 }}>Número</DataTable.Title>
 											<DataTable.Title textStyle={{ fontSize: 15 }}>Barrio</DataTable.Title>
 											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Tipo</DataTable.Title>
-											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Baja</DataTable.Title>
 										</DataTable.Header>
 
-										{territoriosList.sort((a, b) => parseInt(a.id) - parseInt(b.id)).slice(from, to).map((item: any) => (
+										{territoriosList.sort((a, b) => parseInt(a.id) - parseInt(b.id)).slice(from, to).map((item: territorioInterface) => (
 											<DataTable.Row key={item.id}
 												style={{
 													borderColor: theme.colors.primary,
-													...!item.activo && { backgroundColor: theme.colors.errorContainer },
+													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.primaryContainer, color: theme.colors.onPrimaryContainer },
+													...esCaducado(item) && { backgroundColor: theme.colors.expiredContainer, color: theme.colors.onExpiredContainer },
+													...!item.activo && { backgroundColor: theme.colors.errorContainer, color: theme.colors.onErrorContainer },
 												}}
 												onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id, update: () => setUpdate(currUpdate => currUpdate + 1) })}
 											>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.id}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.barrio}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.negocios ? 'Negocios' : 'Normal'}</DataTable.Cell>
-												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.activo ? 'No' : 'Sí'}</DataTable.Cell>
 											</DataTable.Row>
 										))}
 
@@ -215,7 +262,7 @@ const Territorios = () => {
 					update, setUpdate: () => setUpdate(currUpdate => currUpdate + 1), noExisteTer
 				})}
 			/>
-		</View>
+		</View >
 	);
 }
 

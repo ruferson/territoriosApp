@@ -57,16 +57,23 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 			try {
 				const newHistoricoData = {
 					publicador,
-					idTerritorio: item.idTerritorio,
+					terID: item.terID,
 					fechaSalida: Timestamp.fromDate(fechaSalida),
 					...!!fechaEntrada && { fechaEntrada: Timestamp.fromDate(fechaEntrada) },
 					campaña: campaña === 'campaña',
 				}
-				await updateDoc(doc(db, "historicoTerritorios", item.id), newHistoricoData);
+				await updateDoc(doc(db, "territorios", item.terID, 'historico', item.id), newHistoricoData);
 
 				if (!fechaEntrada) {
-					await updateDoc(doc(db, "historicoTerritorios", item.id), {
+					await updateDoc(doc(db, "territorios", item.terID, 'historico', item.id), {
 						fechaEntrada: deleteField()
+					});
+					await updateDoc(doc(db, "territorios", item.terID), { ultimaFecha: Timestamp.fromDate(fechaSalida) });
+				}
+
+				if (!item.fechaEntrada && fechaEntrada) {
+					await updateDoc(doc(db, "territorios", item.terID), {
+						ultimaFecha: deleteField()
 					});
 				}
 
@@ -86,7 +93,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 
 	return (
 		<View style={{ marginHorizontal: '5%' }}>
-		<Text style={globalStyles.label}>Editando</Text>
+			<Text style={globalStyles.label}>Editando</Text>
 			<TextInput
 				theme={{
 					colors: {
@@ -157,7 +164,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 			/>
 			{msg !== '' ? (<Text style={{ color: 'darkred' }}>{msg}</Text>) : <></>}
 			{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
-					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
+			<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 			<Button
 				style={globalStyles.boton}
 				icon=""

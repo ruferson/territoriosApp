@@ -4,6 +4,7 @@ import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'fi
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, Dialog, Portal, Text } from 'react-native-paper';
+import { esCaducado } from '../helpers/Calculos';
 import Historial from '../components/Historial';
 import { auth, db } from '../firebase/firebaseConfig';
 import useHistorico from '../hooks/useHistorico';
@@ -46,8 +47,8 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 			setLoading(true);
 			await deleteDoc(doc(db, "territorios", numero));
 			if (historico.length) {
-				const docRef = collection(db, "historicoTerritorios");
-				const docSnap = await getDocs(query(docRef, where("idTerritorio", "==", numero)));
+				const docRef = collection(db, "territorios", numero, 'historico');
+				const docSnap = await getDocs(query(docRef));
 				docSnap.forEach(async (doc) => {
 					await deleteDoc(doc.ref);
 				})
@@ -136,7 +137,13 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								>
 									<Text style={{ fontSize: 20, fontWeight: 'bold', paddingTop: 4 }}>{activo ? 'Dar de baja' : 'Reactivar'}</Text>
 								</Button>
-								<Text style={[globalStyles.subtitulo, { ...!activo && { color: theme.colors.error } }]}>Número {numero}</Text>
+								<Text style={[globalStyles.subtitulo,
+								{
+									...(!territorioData.ultimaFecha && territorioData.activo) && { color: theme.colors.strongPrimary },
+									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
+									...!territorioData.activo && { color: theme.colors.error }
+								}
+								]}>Número {numero}</Text>
 								{territorioData.img?.url ?
 									(
 										<>

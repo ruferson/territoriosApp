@@ -7,6 +7,7 @@ export const lightTheme = {
 	myOwnProperty: true,
 	...DefaultTheme.colors,
 	colors: {
+		strongPrimary: "#5b8067",
 		primary: "#7CB58F",  // Verde claro
 		onPrimary: "#000000",  // Texto oscuro para contraste en el color principal
 
@@ -64,74 +65,89 @@ export const lightTheme = {
 		surfaceDisabled: "#1B1D1B",  // Superficie deshabilitada: Tonos oscuros para elementos deshabilitados
 		onSurfaceDisabled: "#1B1D1B",  // Texto oscuro para contraste en superficie deshabilitada
 
-		backdrop: "#3C323E"  // Fondo de primer plano: Tonos oscuros
+		backdrop: "#3C323E",  // Fondo de primer plano: Tonos oscuros
+
+		strongExpired: "#648990",
+		expired: "#7cacb6",
+		onExpired: "#000000",
+
+		expiredContainer: "#c9dbe8",
+		onExpiredContainer: "#000000",
 	}
 }
 
 export const darkTheme = {
-  ...DefaultTheme,
-  // Specify custom property
-  myOwnProperty: true,
-  ...DefaultTheme.colors,
-  // Specify custom property in nested object
-  colors: {
-    primary: "#527D5A",  // Verde oscuro (versión más oscura del verde claro)
-    onPrimary: "#FFFFFF",  // Texto blanco para contraste en el color principal
+	...DefaultTheme,
+	// Specify custom property
+	myOwnProperty: true,
+	...DefaultTheme.colors,
+	// Specify custom property in nested object
+	colors: {
+		strongPrimary: "#79b985",
+		primary: "#527D5A",  // Verde oscuro (versión más oscura del verde claro)
+		onPrimary: "#FFFFFF",  // Texto blanco para contraste en el color principal
 
-    primaryContainer: "#2E5042",  // Contenedor del color principal: Verde oscuro suave
-    onPrimaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color principal
+		primaryContainer: "#2E5042",  // Contenedor del color principal: Verde oscuro suave
+		onPrimaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color principal
 
-    secondary: "#3E4C3E",  // Color secundario: Verde oscuro más apagado
-    onSecondary: "#FFFFFF",  // Texto blanco para contraste en el color secundario
+		secondary: "#3E4C3E",  // Color secundario: Verde oscuro más apagado
+		onSecondary: "#FFFFFF",  // Texto blanco para contraste en el color secundario
 
-    secondaryContainer: "#253230",  // Contenedor del color secundario: Verde oscuro suave
-    onSecondaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color secundario
+		secondaryContainer: "#253230",  // Contenedor del color secundario: Verde oscuro suave
+		onSecondaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color secundario
 
-    tertiary: "#4E6F5C",  // Color terciario: Verde azulado oscuro
-    onTertiary: "#FFFFFF",  // Texto blanco para contraste en el color terciario
+		tertiary: "#4E6F5C",  // Color terciario: Verde azulado oscuro
+		onTertiary: "#FFFFFF",  // Texto blanco para contraste en el color terciario
 
-    tertiaryContainer: "#385C48",  // Contenedor del color terciario: Verde azulado oscuro suave
-    onTertiaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color terciario
+		tertiaryContainer: "#385C48",  // Contenedor del color terciario: Verde azulado oscuro suave
+		onTertiaryContainer: "#FFFFFF",  // Texto blanco para contraste en el contenedor del color terciario
 
-    error: "#BA1A1A",  // Color de error: Rojo oscuro
-    onError: "#FFFFFF",  // Texto blanco para contraste en el color de error
+		error: "#BA1A1A",  // Color de error: Rojo oscuro
+		onError: "#FFFFFF",  // Texto blanco para contraste en el color de error
 
-    errorContainer: "#41110b",  // Contenedor del color de error: Tonos rojizos suaves
-    onErrorContainer: "#FFFFFF",  // Texto oscuro para contraste en el contenedor del color de error
+		errorContainer: "#41110b",  // Contenedor del color de error: Tonos rojizos suaves
+		onErrorContainer: "#FFFFFF",  // Texto oscuro para contraste en el contenedor del color de error
 
-    background: "#1D1B1E",  // Fondo principal: Tonos oscuros
-    onBackground: "#E3EBE6",  // Texto claro para contraste en el fondo principal
+		background: "#1D1B1E",  // Fondo principal: Tonos oscuros
+		onBackground: "#E3EBE6",  // Texto claro para contraste en el fondo principal
 
-    surface: "#1D1B1E",  // Superficie: Mismo tono que el fondo principal
-    onSurface: "#E3EBE6",  // Texto claro para contraste en la superficie
+		surface: "#1D1B1E",  // Superficie: Mismo tono que el fondo principal
+		onSurface: "#E3EBE6",  // Texto claro para contraste en la superficie
 
-    surfaceVariant: "#324134",  // Variante de superficie: Verde oscuro suave
-    onSurfaceVariant: "#E3EBE6",  // Texto claro para contraste en la variante de superficie
+		surfaceVariant: "#324134",  // Variante de superficie: Verde oscuro suave
+		onSurfaceVariant: "#E3EBE6",  // Texto claro para contraste en la variante de superficie
 
-    outline: "#4E6F5C",  // Esquema: Verde azulado oscuro
-    outlineVariant: "#8AA394",  // Variante de esquema: Verde claro suave
+		outline: "#4E6F5C",  // Esquema: Verde azulado oscuro
+		outlineVariant: "#8AA394",  // Variante de esquema: Verde claro suave
 
-    shadow: "#000000",  // Sombra: Negro
+		shadow: "#000000",  // Sombra: Negro
 
-    scrim: "#000000",  // Velado: Negro
+		scrim: "#000000",  // Velado: Negro
 
-    inverseSurface: "#2F322F",  // Superficie inversa: Verde azulado más oscuro
-    inverseOnSurface: "#F0F5EF",  // Texto claro para contraste en la superficie inversa
+		inverseSurface: "#2F322F",  // Superficie inversa: Verde azulado más oscuro
+		inverseOnSurface: "#F0F5EF",  // Texto claro para contraste en la superficie inversa
 
-    inversePrimary: "#4E6F5C",  // Color principal invertido: Verde azulado oscuro
+		inversePrimary: "#4E6F5C",  // Color principal invertido: Verde azulado oscuro
 
-    elevation: {
-      level0: "transparent",  // Elevación 0: Transparente
-      level1: "#1A1A1A",  // Elevación 1: Tonos oscuros
-      level2: "#1E1E1E",  // Elevación 2: Tonos oscuros
-      level3: "#222222",  // Elevación 3: Tonos oscuros
-      level4: "#252525",  // Elevación 4: Tonos oscuros
-      level5: "#272727"  // Elevación 5: Tonos oscuros
-    },
+		elevation: {
+			level0: "transparent",  // Elevación 0: Transparente
+			level1: "#1A1A1A",  // Elevación 1: Tonos oscuros
+			level2: "#1E1E1E",  // Elevación 2: Tonos oscuros
+			level3: "#222222",  // Elevación 3: Tonos oscuros
+			level4: "#252525",  // Elevación 4: Tonos oscuros
+			level5: "#272727"  // Elevación 5: Tonos oscuros
+		},
 
-    surfaceDisabled: "#323232",  // Superficie deshabilitada: Tonos oscuros para elementos deshabilitados
-    onSurfaceDisabled: "#1B1B1B",  // Texto oscuro para contraste en superficie deshabilitada
+		surfaceDisabled: "#323232",  // Superficie deshabilitada: Tonos oscuros para elementos deshabilitados
+		onSurfaceDisabled: "#1B1B1B",  // Texto oscuro para contraste en superficie deshabilitada
 
-    backdrop: "#3C323E"  // Fondo de primer plano: Tonos oscuros
-  }
+		backdrop: "#3C323E",  // Fondo de primer plano: Tonos oscuros
+
+		strongExpired: "#7299a1",
+		expired: "#2a393c",            // Letras blancas para texto sobre fondo oscuro
+		onExpired: "#FFFFFF",          // Fondo verde para texto sobre fondo oscuro
+
+		expiredContainer: "#414649",    // Fondo negro para contenedor de elementos vencidos
+		onExpiredContainer: "#FFFFFF"   // Letras verdes para texto dentro del contenedor de elementos vencidos
+	}
 }
