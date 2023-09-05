@@ -62,12 +62,13 @@ const AddTerritorio = ({ route }: { route: any }) => {
 							descripcion,
 							negocios: tipo === 'negocios',
 							numViviendas,
+							uid: auth.currentUser?.uid
 						}
 						if (image) {
 							const uri: string = image.assets[0].uri || '';
 							const imgStorageRef = ref(storage, image.assets[0].fileName);
 							const imageBlob = await getBlobFromUri(uri)
-							await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: numero } });
+							await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: numero, uid: auth.currentUser?.uid || '' } });
 							const url = await getDownloadURL(imgStorageRef);
 							territorioData.img = {path: imgStorageRef.fullPath, url};
 						}

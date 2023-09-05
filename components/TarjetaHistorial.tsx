@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Card, Dialog, Portal, Text } from 'react-native-paper';
+import { Alert, View, useColorScheme } from 'react-native';
+import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
 import { darkTheme, lightTheme } from '../styles/theme';
 import globalStyles from '../styles/global';
 import { DatePickerInput } from 'react-native-paper-dates';
-import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, deleteField, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import EditarHistorial from './EditarHistorial';
 
@@ -15,21 +15,20 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 	const salida = item.fechaSalida.toDate();
 	const [mostrarEntrada, setMostrarEntrada] = useState(false)
 	const [nuevaFechaEntrada, setNuevaFechaEntrada] = useState<Date | undefined>(new Date());
-	const [loadingDelete, setLoadingDelete] = useState(false);
-	const [deleting, setDeleting] = useState(false);
 	const [añadiendoFechaEntrada, setAñadiendoFechaEntrada] = useState(false);
 	const [msgFechaEntrada, setMsgFechaEntrada] = useState('');
 	const [editing, setEditing] = useState(false);
 
 	const deleteHistorico = async () => {
-		setLoadingDelete(true)
 		try {
-			await deleteDoc(doc(db, "historicoTerritorios", item.id));
-			setLoadingDelete(false)
-			setDeleting(false)
+			await deleteDoc(doc(db, "territorios", item.terID, 'historico', item.id));
+			if (!item.fechaEntrada) {
+				await updateDoc(doc(db, "territorios", item.terID), {
+					ultimaFecha: deleteField()
+				});
+			}
 			setUpdate(update + 1)
 		} catch (error) {
-			setLoadingDelete(false)
 			console.log(error)
 		}
 	}
@@ -38,9 +37,12 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 		setAñadiendoFechaEntrada(true)
 		if (nuevaFechaEntrada && nuevaFechaEntrada >= salida) {
 			try {
-				const historico = doc(db, "historicoTerritorios", item.id);
+				const historico = doc(db, "territorios", item.terID, 'historico', item.id);
 				await updateDoc(historico, {
 					fechaEntrada: nuevaFechaEntrada
+				});
+				await updateDoc(doc(db, "territorios", item.terID), {
+					ultimaFecha: deleteField()
 				});
 				setAñadiendoFechaEntrada(false)
 				setUpdate(update + 1)
@@ -56,24 +58,6 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 
 	return (
 		<>
-			<Portal>
-				<Dialog visible={deleting} onDismiss={() => setDeleting(false)}>
-					<Dialog.Title>¿Deseas borrar este historico?</Dialog.Title>
-					<Dialog.Content>
-						<Text variant="bodyMedium">No lo podrás recuperar.</Text>
-					</Dialog.Content>
-					<Dialog.Actions>
-						<Button textColor='darkred' onPress={() => deleteHistorico()}>Sí, borrar</Button>
-						<Button onPress={() => setDeleting(false)}>
-							<Text style={{ fontSize: 20, fontWeight: 'bold' }}>No, cancelar</Text>
-						</Button>
-					</Dialog.Actions>
-					{loadingDelete
-						? (<ActivityIndicator style={{ marginHorizontal: '7%' }} animating={loadingDelete} color={'darkred'} />)
-						: <></>
-					}
-				</Dialog>
-			</Portal>
 			<Card
 				theme={{
 					colors: {
@@ -102,7 +86,20 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 					<View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
 						<Button
 							textColor={theme.colors.onPrimary}
-							onPress={() => setDeleting(true)}
+							onPress={() => {
+								Alert.alert(
+									`¿Deseas borrar este histórico?`,
+									'No lo podrás recuperar.',
+									[
+										{ text: "No, cancelar", style: 'cancel' },
+										{
+											text: 'Sí, borrar',
+											style: 'destructive',
+											onPress: () => deleteHistorico(),
+										},
+									]
+								);
+							}}
 						>
 							Eliminar
 						</Button>

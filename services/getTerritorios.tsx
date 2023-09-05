@@ -1,14 +1,15 @@
-import { collection, getDocs, query, where } from '@firebase/firestore';
+import { collection, getDocs, query, where, collectionGroup } from '@firebase/firestore';
 import { auth, db } from '../firebase/firebaseConfig';
 
 export const getTerritorios = async () => {
 	const collectionRef = collection(db, "territorios");
 
 	try {
-		const querySnapshot = await getDocs(query(collectionRef));
-		const territorios : any = [];
+		const querySnapshot = await getDocs(query(collectionRef, where("uid", "==", auth.currentUser.uid)));
 
-		querySnapshot.forEach((doc) => {
+		const territorios: any = [];
+
+		await querySnapshot.forEach(async (doc) => {
 			territorios.push({ id: doc.id, ...doc.data() });
 		});
 

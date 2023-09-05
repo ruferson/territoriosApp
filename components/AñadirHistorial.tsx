@@ -1,4 +1,4 @@
-import { Timestamp, addDoc, collection } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
@@ -6,6 +6,7 @@ import { DatePickerInput } from 'react-native-paper-dates';
 import { auth, db } from '../firebase/firebaseConfig';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
+import { territorioInterface } from '../interfaces/interfaces';
 
 const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, contieneFechas, antiguaSinCerrar }: any) => {
 	const colorScheme = useColorScheme();
@@ -57,12 +58,16 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			try {
 				const historicoData = {
 					publicador,
-					idTerritorio: id,
+					terID: id,
 					fechaSalida: Timestamp.fromDate(fechaSalida),
 					...!!fechaEntrada && { fechaEntrada: Timestamp.fromDate(fechaEntrada) },
 					campaña: campaña === 'campaña',
+					uid: auth.currentUser?.uid
 				}
-				await addDoc(collection(db, "historicoTerritorios"), historicoData);
+				await addDoc(collection(db, "territorios", id, 'historico'), historicoData);
+				if (!fechaEntrada) {
+					await updateDoc(doc(db, "territorios", id), { ultimaFecha: Timestamp.fromDate(fechaSalida) });
+				}
 				setLoading(false);
 				setAdding(false);
 				setUpdate(update + 1)

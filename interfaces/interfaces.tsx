@@ -1,4 +1,4 @@
-import { StorageReference } from "firebase/storage";
+import { Timestamp } from "firebase/firestore";
 
 export interface territorioInterface {
 	'barrio': string,
@@ -10,4 +10,7 @@ export interface territorioInterface {
 		path: string,
 		url: string
 	},
+	'uid'?: string,
+	'ultimaFecha'?: Timestamp,
+	'id'?: string
 }

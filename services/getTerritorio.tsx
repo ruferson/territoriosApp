@@ -15,6 +15,6 @@ export const getTerritorio = async (id: string) => {
 		}
 	} catch (error) {
 		console.error("Error al obtener el territorio:", error);
-		return null;
+		return {};
 	}
 };
