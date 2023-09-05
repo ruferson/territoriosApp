@@ -15,15 +15,15 @@ import { darkTheme, lightTheme } from '../styles/theme';
 const TerritorioDetalle = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-	const { numero, update: updateTerritorios } = route.params;
+	const { id, numero, update: updateTerritorios } = route.params;
 
 	const navigation = useNavigation();
 	const [update, setUpdate] = useState(0);
-	const { territorioData, loadingTerritorio } = useTerritorio(numero, update);
+	const { territorioData, loadingTerritorio } = useTerritorio(id, update);
 	const [activo, setActivo] = useState(true);
 
 	const [refreshing, setRefreshing] = useState(false);
-	const { historico, loadingHistorico } = useHistorico(numero, update)
+	const { historico, loadingHistorico } = useHistorico(id, update)
 	const [loading, setLoading] = useState(false);
 
 	onAuthStateChanged(auth, () => {
@@ -45,9 +45,9 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 	const borrarTerritorio = async () => {
 		try {
 			setLoading(true);
-			await deleteDoc(doc(db, "territorios", numero));
+			await deleteDoc(doc(db, "territorios", id));
 			if (historico.length) {
-				const docRef = collection(db, "territorios", numero, 'historico');
+				const docRef = collection(db, "territorios", id, 'historico');
 				const docSnap = await getDocs(query(docRef));
 				docSnap.forEach(async (doc) => {
 					await deleteDoc(doc.ref);
@@ -143,7 +143,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
 									...!territorioData.activo && { color: theme.colors.error }
 								}
-								]}>Número {numero}</Text>
+								]}>Número {numero}{esCaducado(territorioData) && ' (¡CADUCADO!)'}</Text>
 								{territorioData.img?.url ?
 									(
 										<>
@@ -167,7 +167,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								<Text style={globalStyles.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
 								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
 								<Text style={globalStyles.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
-								<Historial historico={historico} loadingHistorico={loadingHistorico} update={update} setUpdate={setUpdate} territorioID={numero} />
+								<Historial historico={historico} loadingHistorico={loadingHistorico} update={update} setUpdate={setUpdate} territorioID={id} />
 							</>
 						)
 					}

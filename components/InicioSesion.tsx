@@ -6,18 +6,18 @@ import { auth } from '../firebase/firebaseConfig';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
-const SignIn = () => {
-  const colorScheme = useColorScheme();
+const InicioSesion = () => {
+	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [email, setEmail] = useState('')
-	const [passwd, setPasswd] = useState('')
+	const [contraseña, setContraseña] = useState('')
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
 
-	const onSignInHandler = async () => {
+	const manejarInicioSesion = async () => {
 		setLoading(true);
 		try {
-			await signInWithEmailAndPassword(auth, email, passwd);
+			await signInWithEmailAndPassword(auth, email, contraseña);
 			setMsg('')
 			setLoading(false);
 		} catch (error) {
@@ -29,9 +29,9 @@ const SignIn = () => {
 	};
 
 	return (
-		<View style={[globalStyles.contenedor, {backgroundColor: theme.colors.background}]}>
+		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 			<View style={globalStyles.contenido}>
-				<Text style={globalStyles.subtitulo}>Bienvenido,</Text>
+				<Text style={globalStyles.subtitulo}>¡Hola!</Text>
 				<TextInput
 					label="E-Mail"
 					value={email}
@@ -41,11 +41,11 @@ const SignIn = () => {
 				/>
 				<TextInput
 					label="Contraseña"
-					value={passwd}
+					value={contraseña}
 					style={globalStyles.input}
 					mode='outlined'
 					secureTextEntry
-					onChangeText={text => setPasswd(text)}
+					onChangeText={text => setContraseña(text)}
 				/>
 				<Button
 					style={globalStyles.boton}
@@ -53,7 +53,7 @@ const SignIn = () => {
 					buttonColor={theme.colors.primary}
 					mode="contained"
 					compact
-					onPress={() => onSignInHandler()}
+					onPress={() => manejarInicioSesion()}
 				>
 					Iniciar Sesión
 				</Button>
@@ -64,4 +64,4 @@ const SignIn = () => {
 	);
 }
 
-export default SignIn;
+export default InicioSesion;

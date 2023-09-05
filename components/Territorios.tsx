@@ -1,12 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
+import { RefreshControl, ScrollView, View, useColorScheme, Alert } from 'react-native';
 import { ActivityIndicator, Avatar, Button, Card, DataTable, FAB, IconButton, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { esCaducado } from '../helpers/Calculos';
 import useTerritorios from '../hooks/useTerritorios';
 import { territorioInterface } from '../interfaces/interfaces';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
+import { auth } from '../firebase/firebaseConfig';
 
 const Territorios = () => {
 	const colorScheme = useColorScheme();
@@ -26,6 +27,8 @@ const Territorios = () => {
 	const [filtroViv, setFiltroViv] = useState<string>('');
 	const [filtroBaja, setFiltroBaja] = useState<string[]>([]);
 	const [filtroNegocios, setFiltroNegocios] = useState<string[]>([]);
+	const [filtroDisponibles, setFiltroDisponibles] = useState<string[]>([]);
+	const [filtroCaducado, setFiltroCaducado] = useState<string[]>([]);
 	const navigation = useNavigation();
 
 	useEffect(() => {
@@ -41,7 +44,7 @@ const Territorios = () => {
 	};
 
 	const noExisteTer = (numero: string) => {
-		const existeTer = territorios.find((value) => value.id === numero);
+		const existeTer = territorios.find((value) => value.numero === numero);
 		return !existeTer;
 	}
 
@@ -57,6 +60,12 @@ const Territorios = () => {
 			: filteredTerritorios;
 		filteredTerritorios = filtroNegocios.length === 1
 			? filteredTerritorios.filter((ter) => ter.negocios === (filtroNegocios[0] === 'negocios'))
+			: filteredTerritorios;
+		filteredTerritorios = filtroDisponibles.length === 1
+			? filteredTerritorios.filter((ter) => (filtroDisponibles[0] === 'disponible') ? (!ter.ultimaFecha && ter.activo) : (!!ter.ultimaFecha))
+			: filteredTerritorios;
+		filteredTerritorios = filtroCaducado.length === 1
+			? filteredTerritorios.filter((ter) => esCaducado(ter) === (filtroCaducado[0] === 'caducados'))
 			: filteredTerritorios;
 		setTerritoriosList(filteredTerritorios);
 	}
@@ -135,13 +144,14 @@ const Territorios = () => {
 									},
 									{
 										value: 'inactivo',
-										label: 'Inactivos',
+										label: 'Dados de baja',
 										showSelectedCheck: true
 									},
 								]}
 							/>
 							<SegmentedButtons
 								value={filtroNegocios}
+								style={{ marginBottom: 10 }}
 								multiSelect
 								onValueChange={setFiltroNegocios}
 								buttons={[
@@ -157,6 +167,41 @@ const Territorios = () => {
 									},
 								]}
 							/>
+							<SegmentedButtons
+								value={filtroDisponibles}
+								style={{ marginBottom: 10 }}
+								multiSelect
+								onValueChange={setFiltroDisponibles}
+								buttons={[
+									{
+										value: 'disponible',
+										label: 'Disponibles',
+										showSelectedCheck: true
+									},
+									{
+										value: 'noDisponible',
+										label: 'En proceso',
+										showSelectedCheck: true
+									},
+								]}
+							/>
+							<SegmentedButtons
+								value={filtroCaducado}
+								multiSelect
+								onValueChange={setFiltroCaducado}
+								buttons={[
+									{
+										value: 'caducados',
+										label: 'Caducados',
+										showSelectedCheck: true
+									},
+									{
+										value: 'noCaducados',
+										label: 'No caducados',
+										showSelectedCheck: true
+									},
+								]}
+							/>
 							<View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
 								<Button
 									style={[globalStyles.boton, { marginBottom: 15, width: '48%' }]}
@@ -167,6 +212,8 @@ const Territorios = () => {
 									onPress={() => {
 										setFiltroBaja([]);
 										setFiltroNegocios([]);
+										setFiltroCaducado([]);
+										setFiltroDisponibles([]);
 										setFiltroBarrio('');
 										setFiltroViv('');
 										setTerritoriosList(territorios);
@@ -214,17 +261,17 @@ const Territorios = () => {
 											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Tipo</DataTable.Title>
 										</DataTable.Header>
 
-										{territoriosList.sort((a, b) => parseInt(a.id) - parseInt(b.id)).slice(from, to).map((item: territorioInterface) => (
-											<DataTable.Row key={item.id}
+										{territoriosList.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).slice(from, to).map((item: territorioInterface) => (
+											<DataTable.Row key={item.numero}
 												style={{
 													borderColor: theme.colors.primary,
 													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.primaryContainer, color: theme.colors.onPrimaryContainer },
 													...esCaducado(item) && { backgroundColor: theme.colors.expiredContainer, color: theme.colors.onExpiredContainer },
 													...!item.activo && { backgroundColor: theme.colors.errorContainer, color: theme.colors.onErrorContainer },
 												}}
-												onPress={() => navigation.navigate('TerritorioDetalle', { numero: item.id, update: () => setUpdate(currUpdate => currUpdate + 1) })}
+												onPress={() => navigation.navigate('TerritorioDetalle', { id: item.id, numero: item.numero, update: () => setUpdate(currUpdate => currUpdate + 1) })}
 											>
-												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.id}</DataTable.Cell>
+												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.numero}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.barrio}</DataTable.Cell>
 												<DataTable.Cell textStyle={{ fontSize: 15 }} numeric>{item.negocios ? 'Negocios' : 'Normal'}</DataTable.Cell>
 											</DataTable.Row>
@@ -252,11 +299,37 @@ const Territorios = () => {
 				}
 			</ScrollView>
 			<FAB
+				icon="account-off"
+				theme={{
+					roundness: 10,
+					colors: {
+						primaryContainer: theme.colors.errorContainer
+					}
+				}}
+				style={globalStyles.fabLeft}
+				label="Cerrar Sesión"
+				size="small"
+				onPress={() => {
+					Alert.alert(
+						`Vas a cerrar sesión`,
+						'¿Estás seguro de que quieres cerrar sesión?',
+						[
+							{ text: "No", style: 'cancel' },
+							{
+								text: 'Sí, cerrar sesión',
+								style: 'destructive',
+								onPress: () => auth.signOut(),
+							},
+						]
+					);
+				}}
+			/>
+			<FAB
 				icon="plus"
 				theme={{
 					roundness: 10,
 				}}
-				style={globalStyles.fab}
+				style={globalStyles.fabRight}
 				label="Añadir Territorio"
 				onPress={() => navigation.navigate('AddTerritorio', {
 					update, setUpdate: () => setUpdate(currUpdate => currUpdate + 1), noExisteTer

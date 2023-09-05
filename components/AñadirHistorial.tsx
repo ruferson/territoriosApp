@@ -18,7 +18,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
 
-	const onSignInHandler = async () => {
+	const añadirHistorico = async () => {
 		setLoading(true);
 		if (publicador !== '' && fechaSalida !== undefined && campaña !== '') {
 			setMsg('')
@@ -147,7 +147,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 				buttonColor={theme.colors.secondary}
 				mode="contained"
 				compact
-				onPress={() => onSignInHandler()}
+				onPress={() => añadirHistorico()}
 			>
 				<Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold' }}>Añadir</Text>
 			</Button>

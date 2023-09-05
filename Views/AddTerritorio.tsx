@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useState } from 'react';
-import { ScrollView, View, useColorScheme, Image, Platform } from 'react-native';
+import { Alert, Image, ScrollView, View, useColorScheme } from 'react-native';
+import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { auth, db, storage } from '../firebase/firebaseConfig';
+import { territorioInterface } from '../interfaces/interfaces';
 import globalStyles from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import { territorioInterface } from '../interfaces/interfaces';
 
 const AddTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
@@ -57,6 +57,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 					setMsg('')
 					try {
 						const territorioData: territorioInterface = {
+							numero,
 							activo: activo === 'true',
 							barrio,
 							descripcion,
@@ -70,22 +71,26 @@ const AddTerritorio = ({ route }: { route: any }) => {
 							const imageBlob = await getBlobFromUri(uri)
 							await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: numero, uid: auth.currentUser?.uid || '' } });
 							const url = await getDownloadURL(imgStorageRef);
-							territorioData.img = {path: imgStorageRef.fullPath, url};
+							territorioData.img = { path: imgStorageRef.fullPath, url };
 						}
-						await setDoc(doc(db, "territorios", numero), territorioData);
+						await addDoc(collection(db, "territorios"), territorioData);
 						setLoading(false);
 						setUpdate()
 						navigation.goBack();
 					} catch (error) {
+						setLoading(false);
 						console.log(error)
 					}
 				} else {
+					setLoading(false);
 					setMsg('El número de territorio indicado ya está siendo usado.')
 				}
 			} else {
+				setLoading(false);
 				setMsg('¡Números incorrectos!')
 			}
 		} else {
+			setLoading(false);
 			setMsg('¡Faltan datos!')
 		}
 	};
@@ -210,7 +215,20 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						buttonColor={theme.colors.primary}
 						mode="contained"
 						compact
-						onPress={() => addTerritorioHandler()}
+						onPress={() => {
+							Alert.alert(
+								`¿Estás seguro de que quieres crear el territorio?`,
+								'Asegúrate de que los datos estén correctos.',
+								[
+									{ text: "No, seguir editando", style: 'cancel' },
+									{
+										text: 'Sí, crear',
+										style: 'destructive',
+										onPress: () => addTerritorioHandler(),
+									},
+								]
+							);
+						}}
 					>
 						<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Guardar</Text>
 					</Button>

@@ -78,6 +78,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 			setMsg('')
 			try {
 				const newTerritorioData: territorioInterface = {
+					numero: territorioData.numero,
 					activo: activo === 'true',
 					barrio,
 					descripcion,
@@ -101,7 +102,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 						await deleteObject(imgStorageRef);
 					}
 				}
-				await setDoc(doc(db, "territorios", territorioData.id), newTerritorioData);
+				await setDoc(doc(db, "territorios", territorioData.numero), newTerritorioData);
 				setLoading(false);
 				setGuardado(true);
 				setUpdate(update + 1)

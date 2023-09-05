@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface territorioInterface {
+	'numero': string,
 	'barrio': string,
 	'activo': boolean,
 	'negocios': boolean,
