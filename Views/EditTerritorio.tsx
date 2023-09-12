@@ -120,7 +120,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView>
 				<View style={globalStyles.contenido}>
-					<Text style={globalStyles.subtitulo}>Editando Territorio Número {territorioData.id}</Text>
+					<Text style={globalStyles.subtitulo}>Editando Territorio Número {territorioData.numero}</Text>
 					<TextInput
 						label="Barrio *"
 						value={barrio}
