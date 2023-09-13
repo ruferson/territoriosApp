@@ -80,7 +80,7 @@ const Territorios = () => {
 				<View style={[globalStyles.contenido, { marginTop: 30, marginHorizontal: 80, flexDirection: 'row', justifyContent: 'space-between' }]}>
 					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
 						colors: {
-							primary: theme.colors.primary,
+							primary: theme.colors.available,
 						},
 					}} />
 					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
@@ -265,7 +265,7 @@ const Territorios = () => {
 											<DataTable.Row key={item.numero}
 												style={{
 													borderColor: theme.colors.primary,
-													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.primaryContainer, color: theme.colors.onPrimaryContainer },
+													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.availableContainer, color: theme.colors.onAvailableContainer },
 													...esCaducado(item) && { backgroundColor: theme.colors.expiredContainer, color: theme.colors.onExpiredContainer },
 													...!item.activo && { backgroundColor: theme.colors.errorContainer, color: theme.colors.onErrorContainer },
 												}}
