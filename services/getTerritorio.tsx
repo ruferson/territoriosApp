@@ -1,17 +1,21 @@
 import { doc, getDoc } from 'firebase/firestore';
 
-import { db } from '../firebase/firebaseConfig';
+import { auth, db } from '../firebase/firebaseConfig';
 
 export const getTerritorio = async (id: string) => {
 	try {
-		const docRef = doc(db, "territorios", id);
-		const docSnap = await getDoc(docRef);
+		if (auth.currentUser) {
+			const docRef = doc(db, "territorios", id);
+			const docSnap = await getDoc(docRef);
 
-		if (docSnap.exists()) {
-			return { id: docSnap.id, ...docSnap.data() };
+			if (docSnap.exists()) {
+				return { id: docSnap.id, ...docSnap.data() };
+			} else {
+				console.log("No such document!");
+				return null;
+			}
 		} else {
-			console.log("No such document!");
-			return null;
+			throw new Error('¡No has iniciado sesión!');
 		}
 	} catch (error) {
 		console.error("Error al obtener el territorio:", error);

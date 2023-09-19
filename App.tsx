@@ -2,13 +2,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { LogBox, useColorScheme } from 'react-native';
-import AddTerritorio from './Views/AddTerritorio';
-import Home from './Views/Home';
+import AñadirTerritorio from './Views/AñadirTerritorio';
+import Inicio from './Views/Inicio';
 import TerritorioDetalle from './Views/TerritorioDetalle';
 import { darkTheme, lightTheme } from './styles/theme';
 import { Text } from 'react-native-paper';
-import globalStyles from './styles/global';
-import EditTerritorio from './Views/EditTerritorio';
+import globalCSS from './styles/global';
+import EditarTerritorio from './Views/EditarTerritorio';
 import { appVersion } from './constants/appVersion';
 
 LogBox.ignoreLogs([
@@ -25,8 +25,8 @@ const App = () => {
 		<NavigationContainer>
 			<Stack.Navigator>
 				<Stack.Screen
-					name="Home"
-					component={Home}
+					name="Inicio"
+					component={Inicio}
 					options={{
 						animation: 'fade',
 						animationDuration: 3000,
@@ -39,12 +39,12 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
+						headerRight: () => <Text style={[globalCSS.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
-					name="AddTerritorio"
-					component={AddTerritorio}
+					name="AñadirTerritorio"
+					component={AñadirTerritorio}
 					options={{
 						animation: 'fade',
 						animationDuration: 3000,
@@ -57,7 +57,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
+						headerRight: () => <Text style={[globalCSS.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
@@ -75,12 +75,12 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
+						headerRight: () => <Text style={[globalCSS.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 				<Stack.Screen
-					name="EditTerritorio"
-					component={EditTerritorio}
+					name="EditarTerritorio"
+					component={EditarTerritorio}
 					options={{
 						animation: 'fade',
 						animationDuration: 3000,
@@ -93,7 +93,7 @@ const App = () => {
 							fontWeight: 'bold',
 						},
 						headerTitleAlign: 'center',
-						headerRight: () => <Text style={[globalStyles.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
+						headerRight: () => <Text style={[globalCSS.version, { color: theme.colors.onSecondary }]}>{appVersion}</Text>
 					}}
 				/>
 			</Stack.Navigator>

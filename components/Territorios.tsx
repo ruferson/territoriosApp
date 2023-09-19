@@ -5,11 +5,11 @@ import { ActivityIndicator, Avatar, Button, Card, DataTable, FAB, IconButton, Se
 import { esCaducado } from '../helpers/Calculos';
 import useTerritorios from '../hooks/useTerritorios';
 import { territorioInterface } from '../interfaces/interfaces';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 import { auth } from '../firebase/firebaseConfig';
 
-const Territorios = () => {
+const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: React.Dispatch<React.SetStateAction<boolean>> }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [page, setPage] = useState<number>(0);
@@ -71,16 +71,16 @@ const Territorios = () => {
 	}
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
 			>
-				<View style={[globalStyles.contenido, { marginTop: 30, marginHorizontal: 80, flexDirection: 'row', justifyContent: 'space-between' }]}>
+				<View style={[globalCSS.contenido, { marginTop: 30, marginHorizontal: 80, flexDirection: 'row', justifyContent: 'space-between' }]}>
 					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
 						colors: {
-							primary: theme.colors.primary,
+							primary: theme.colors.available,
 						},
 					}} />
 					<Avatar.Icon size={30} icon="blank" style={{ borderRadius: 0 }} theme={{
@@ -94,13 +94,13 @@ const Territorios = () => {
 						},
 					}} />
 				</View>
-				<View style={[globalStyles.contenido, { marginTop: 2, marginHorizontal: 60, flexDirection: 'row', justifyContent: 'space-between' }]}>
+				<View style={[globalCSS.contenido, { marginTop: 2, marginHorizontal: 60, flexDirection: 'row', justifyContent: 'space-between' }]}>
 					<Text>Disponible</Text>
 					<Text style={{ marginLeft: 15 }}>Caducado</Text>
 					<Text>Dado de baja</Text>
 				</View>
-				<View style={[globalStyles.contenido, { marginTop: 0, flexDirection: 'row', justifyContent: 'space-between' }]}>
-					<Text style={[globalStyles.subtitulo, { textAlign: 'right', width: '70%' }]}>
+				<View style={[globalCSS.contenido, { marginTop: 0, flexDirection: 'row', justifyContent: 'space-between' }]}>
+					<Text style={[globalCSS.subtitulo, { textAlign: 'right', width: '70%' }]}>
 						Lista de Territorios
 					</Text>
 					<IconButton
@@ -118,14 +118,14 @@ const Territorios = () => {
 						<View style={[{ backgroundColor: theme.colors.secondaryContainer, paddingHorizontal: '5%', paddingTop: 3 }]}>
 							<TextInput
 								label="Barrio"
-								style={[globalStyles.input, { height: 45, marginBottom: 5 }]}
+								style={[globalCSS.input, { height: 45, marginBottom: 5 }]}
 								mode='outlined'
 								onChangeText={setFiltroBarrio}
 								value={filtroBarrio}
 							/>
 							<TextInput
 								label="Número Mínimo de Viviendas"
-								style={[globalStyles.input, { height: 45 }]}
+								style={[globalCSS.input, { height: 45 }]}
 								mode='outlined'
 								keyboardType='numeric'
 								onChangeText={setFiltroViv}
@@ -204,7 +204,7 @@ const Territorios = () => {
 							/>
 							<View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
 								<Button
-									style={[globalStyles.boton, { marginBottom: 15, width: '48%' }]}
+									style={[globalCSS.boton, { marginBottom: 15, width: '48%' }]}
 									icon=""
 									buttonColor={theme.colors.error}
 									mode="contained"
@@ -222,7 +222,7 @@ const Territorios = () => {
 									<Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold', paddingTop: 2 }}>Limpiar Filtros</Text>
 								</Button>
 								<Button
-									style={[globalStyles.boton, { marginBottom: 15, width: '48%' }]}
+									style={[globalCSS.boton, { marginBottom: 15, width: '48%' }]}
 									icon=""
 									buttonColor={theme.colors.secondary}
 									mode="contained"
@@ -239,7 +239,7 @@ const Territorios = () => {
 					? (<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />)
 					: territoriosList.length ? (
 						<View
-							style={[globalStyles.contenido, {
+							style={[globalCSS.contenido, {
 								margin: '1%',
 								marginBottom: '30%',
 								flexDirection: 'column',
@@ -265,10 +265,11 @@ const Territorios = () => {
 											<DataTable.Row key={item.numero}
 												style={{
 													borderColor: theme.colors.primary,
-													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.primaryContainer, color: theme.colors.onPrimaryContainer },
+													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.availableContainer, color: theme.colors.onAvailableContainer },
 													...esCaducado(item) && { backgroundColor: theme.colors.expiredContainer, color: theme.colors.onExpiredContainer },
 													...!item.activo && { backgroundColor: theme.colors.errorContainer, color: theme.colors.onErrorContainer },
 												}}
+												// @ts-ignore "NEVER"
 												onPress={() => navigation.navigate('TerritorioDetalle', { id: item.id, numero: item.numero, update: () => setUpdate(currUpdate => currUpdate + 1) })}
 											>
 												<DataTable.Cell textStyle={{ fontSize: 15 }}>{item.numero}</DataTable.Cell>
@@ -295,7 +296,7 @@ const Territorios = () => {
 								</Card.Content>
 							</Card>
 						</View>
-					) : <Text style={[globalStyles.subSubtitulo, { textAlign: 'center' }]}>No hay territorios disponibles</Text>
+					) : <Text style={[globalCSS.subSubtitulo, { textAlign: 'center' }]}>No hay territorios disponibles</Text>
 				}
 			</ScrollView>
 			<FAB
@@ -306,7 +307,7 @@ const Territorios = () => {
 						primaryContainer: theme.colors.errorContainer
 					}
 				}}
-				style={globalStyles.fabLeft}
+				style={globalCSS.fabLeft}
 				label="Cerrar Sesión"
 				size="small"
 				onPress={() => {
@@ -318,7 +319,10 @@ const Territorios = () => {
 							{
 								text: 'Sí, cerrar sesión',
 								style: 'destructive',
-								onPress: () => auth.signOut(),
+								onPress: async () => {
+									setOffline(false);
+									await auth.signOut();
+								},
 							},
 						]
 					);
@@ -329,9 +333,10 @@ const Territorios = () => {
 				theme={{
 					roundness: 10,
 				}}
-				style={globalStyles.fabRight}
+				style={globalCSS.fabRight}
 				label="Añadir Territorio"
-				onPress={() => navigation.navigate('AddTerritorio', {
+				// @ts-ignore "NEVER"
+				onPress={() => navigation.navigate('AñadirTerritorio', {
 					update, setUpdate: () => setUpdate(currUpdate => currUpdate + 1), noExisteTer
 				})}
 			/>

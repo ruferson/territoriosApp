@@ -1,9 +1,9 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Text, TextInput, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Text, TextInput } from 'react-native-paper';
 import { auth } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
 const InicioSesion = () => {
@@ -29,26 +29,26 @@ const InicioSesion = () => {
 	};
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
-			<View style={globalStyles.contenido}>
-				<Text style={globalStyles.subtitulo}>¡Hola!</Text>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
+			<View style={globalCSS.contenido}>
+				<Text style={globalCSS.subtitulo}>¡Hola!</Text>
 				<TextInput
 					label="E-Mail"
 					value={email}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					onChangeText={text => setEmail(text)}
 				/>
 				<TextInput
 					label="Contraseña"
 					value={contraseña}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					secureTextEntry
 					onChangeText={text => setContraseña(text)}
 				/>
 				<Button
-					style={globalStyles.boton}
+					style={globalCSS.boton}
 					icon=""
 					buttonColor={theme.colors.primary}
 					mode="contained"

@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Dialog, Portal, Text } from 'react-native-paper';
-import { esCaducado } from '../helpers/Calculos';
+import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import Historial from '../components/Historial';
 import { auth, db } from '../firebase/firebaseConfig';
+import { esCaducado } from '../helpers/Calculos';
 import useHistorico from '../hooks/useHistorico';
 import useTerritorio from '../hooks/useTerritorio';
-import { default as globalStyles } from '../styles/global';
+import { default as globalCSS } from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
 const TerritorioDetalle = ({ route }: { route: any }) => {
@@ -28,7 +28,8 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 
 	onAuthStateChanged(auth, () => {
 		if (auth === null) {
-			navigation.navigate('Home');
+			// @ts-ignore "NEVER"
+			navigation.navigate('Inicio');
 		}
 	});
 
@@ -82,19 +83,19 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 	}
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
 			>
-				<View style={[globalStyles.contenido]}>
+				<View style={[globalCSS.contenido]}>
 					{loadingTerritorio || loading || territorioData === null
 						? (<ActivityIndicator style={{ marginTop: '20%' }} animating={loadingTerritorio} color={theme.colors.primary} />)
 						: (
 							<>
 								<Button
-									style={[globalStyles.boton, { marginBottom: 3 }]}
+									style={[globalCSS.boton, { marginBottom: 3 }]}
 									icon=""
 									buttonColor={'darkred'}
 									mode="contained"
@@ -117,17 +118,18 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 									<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Eliminar</Text>
 								</Button>
 								<Button
-									style={[globalStyles.boton, { marginBottom: 3 }]}
+									style={[globalCSS.boton, { marginBottom: 3 }]}
 									icon=""
 									buttonColor={theme.colors.secondary}
 									mode="contained"
 									compact
-									onPress={() => navigation.navigate('EditTerritorio', { update, setUpdate, territorioData })}
+									// @ts-ignore "NEVER"
+									onPress={() => navigation.navigate('EditarTerritorio', { update, setUpdate, territorioData })}
 								>
 									<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Editar</Text>
 								</Button>
 								<Button
-									style={[globalStyles.boton, { marginBottom: 3 }]}
+									style={[globalCSS.boton, { marginBottom: 3 }]}
 									icon=""
 									buttonColor={theme.colors.secondaryContainer}
 									textColor={theme.colors.onSecondaryContainer}
@@ -137,7 +139,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								>
 									<Text style={{ fontSize: 20, fontWeight: 'bold', paddingTop: 4 }}>{activo ? 'Dar de baja' : 'Reactivar'}</Text>
 								</Button>
-								<Text style={[globalStyles.subtitulo,
+								<Text style={[globalCSS.subtitulo,
 								{
 									...(!territorioData.ultimaFecha && territorioData.activo) && { color: theme.colors.strongPrimary },
 									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
@@ -147,7 +149,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								{territorioData.img?.url ?
 									(
 										<>
-											<Text style={[globalStyles.subSubtitulo, { marginVertical: 0 }]}>Imagen:</Text>
+											<Text style={[globalCSS.subSubtitulo, { marginVertical: 0 }]}>Imagen:</Text>
 											<Image
 												style={{ width: '100%', height: 230, borderRadius: 5 }}
 												source={{ uri: territorioData.img?.url }}
@@ -157,16 +159,16 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 									)
 									: <></>
 								}
-								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Barrio:</Text>
-								<Text style={globalStyles.texto}>{territorioData.barrio}</Text>
-								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Descripción:</Text>
-								<Text style={globalStyles.texto}>{territorioData.descripcion === '' ? '-' : territorioData.descripcion}</Text>
-								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Número de Viviendas:</Text>
-								<Text style={globalStyles.texto}>{territorioData.numViviendas === '' ? '-' : territorioData.numViviendas}</Text>
-								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Tipo:</Text>
-								<Text style={globalStyles.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
-								<Text style={[globalStyles.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
-								<Text style={globalStyles.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Barrio:</Text>
+								<Text style={globalCSS.texto}>{territorioData.barrio}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Descripción:</Text>
+								<Text style={globalCSS.texto}>{territorioData.descripcion === '' ? '-' : territorioData.descripcion}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Número de Viviendas:</Text>
+								<Text style={globalCSS.texto}>{territorioData.numViviendas === '' ? '-' : territorioData.numViviendas}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Tipo:</Text>
+								<Text style={globalCSS.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
+								<Text style={globalCSS.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
 								<Historial historico={historico} loadingHistorico={loadingHistorico} update={update} setUpdate={setUpdate} territorioID={id} />
 							</>
 						)

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const globalStyles = StyleSheet.create({
+const globalCSS = StyleSheet.create({
 	version: {
 		position: 'absolute',
 		right: 2,
@@ -71,16 +71,16 @@ const globalStyles = StyleSheet.create({
 	},
 	fabRight: {
 		position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 30,
+		margin: 16,
+		right: 0,
+		bottom: 30,
 		fontWeight: 'bold'
 	},
 	fabLeft: {
 		position: 'absolute',
-    margin: 16,
-    left: 0,
-    bottom: 30,
+		margin: 16,
+		left: 0,
+		bottom: 30,
 		fontWeight: 'bold'
 	},
 	modal: {
@@ -89,4 +89,4 @@ const globalStyles = StyleSheet.create({
 	}
 });
 
-export default globalStyles;
+export default globalCSS;

@@ -1,13 +1,13 @@
-import { Timestamp, addDoc, collection, deleteField, doc, updateDoc } from 'firebase/firestore';
+import { Timestamp, deleteField, doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
-import { auth, db } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import { db } from '../firebase/firebaseConfig';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
-const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas, antiguaSinCerrar }: any) => {
+const EditarHistorial = ({ item, setUpdate, update, esEntreFechas, contieneFechas, hayAntiguaSinCerrar }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [publicador, setPublicador] = useState(item.publicador)
@@ -28,7 +28,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 					setLoading(false);
 					return;
 				}
-				if (entreFechas(fechaEntrada, item.id)) {
+				if (esEntreFechas(fechaEntrada, item.id)) {
 					setMsg('Hay un histórico que incluye la fecha de entrada indicada.')
 					setLoading(false);
 					return;
@@ -41,14 +41,14 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 			}
 
 			if (!fechaEntrada) {
-				if (antiguaSinCerrar(fechaSalida, item.id)) {
+				if (hayAntiguaSinCerrar(fechaSalida, item.id)) {
 					setMsg('No deberías volver a abrir un histórico antiguo.')
 					setLoading(false);
 					return;
 				}
 			}
 
-			if (entreFechas(fechaSalida, item.id)) {
+			if (esEntreFechas(fechaSalida, item.id)) {
 				setMsg('Hay un histórico que incluye la fecha salida indicada.')
 				setLoading(false);
 				return;
@@ -93,7 +93,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 
 	return (
 		<View style={{ marginHorizontal: '5%' }}>
-			<Text style={globalStyles.label}>Editando</Text>
+			<Text style={globalCSS.label}>Editando</Text>
 			<TextInput
 				theme={{
 					colors: {
@@ -102,7 +102,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 				}}
 				label="Nombre Publicador"
 				value={publicador}
-				style={globalStyles.input}
+				style={globalCSS.input}
 				mode='outlined'
 				onChangeText={text => setPublicador(text)}
 			/>
@@ -113,7 +113,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 					},
 				}}
 				locale="es"
-				style={globalStyles.input}
+				style={globalCSS.input}
 				label="Fecha de salida"
 				value={fechaSalida}
 				withModal={false}
@@ -133,7 +133,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 					},
 				}}
 				locale="es"
-				style={globalStyles.input}
+				style={globalCSS.input}
 				label="Fecha de entrada"
 				value={fechaEntrada}
 				withModal={false}
@@ -146,7 +146,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 				inputMode="start"
 				mode='outlined'
 			/>
-			<Text style={globalStyles.label}>Tipo: *</Text>
+			<Text style={globalCSS.label}>Tipo: *</Text>
 			<SegmentedButtons
 				value={campaña}
 				onValueChange={setCampaña}
@@ -166,7 +166,7 @@ const EditarHistorial = ({ item, setUpdate, update, entreFechas, contieneFechas,
 			{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
 			<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 			<Button
-				style={globalStyles.boton}
+				style={globalCSS.boton}
 				icon=""
 				textColor={theme.colors.onSecondary}
 				buttonColor={theme.colors.secondary}
