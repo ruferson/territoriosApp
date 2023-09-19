@@ -21,14 +21,19 @@ const Registro = () => {
 	const [msg, setMsg] = useState('')
 
 	const manejarRegistro = async () => {
-		if (validarFormulario() && auth.currentUser) {
+		if (validarFormulario()) {
 			setLoading(true);
 			try {
 				await createUserWithEmailAndPassword(auth, email, contraseña);
-				await setDoc(doc(db, "users", auth.currentUser.uid), { email, nombre });
-				await signInWithEmailAndPassword(auth, email, contraseña);
-				setMsg('')
-				setLoading(false);
+				if (auth.currentUser) {
+					await setDoc(doc(db, "users", auth.currentUser.uid), { email, nombre });
+					await signInWithEmailAndPassword(auth, email, contraseña);
+					setMsg('')
+					setLoading(false);
+				} else {
+					setMsg('¡Error inesperado! Prueba de nuevo.')
+					throw new Error('¡Error inesperado! Prueba de nuevo.')
+				}
 			} catch (error) {
 				console.log(error)
 				setMsg('¡Hay un error en los datos!')
