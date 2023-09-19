@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, Text, TextInput } from 'react-native-paper';
 import { auth, db } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
 const Registro = () => {
@@ -21,8 +21,7 @@ const Registro = () => {
 	const [msg, setMsg] = useState('')
 
 	const manejarRegistro = async () => {
-
-		if (validarFormulario()) {
+		if (validarFormulario() && auth.currentUser) {
 			setLoading(true);
 			try {
 				await createUserWithEmailAndPassword(auth, email, contraseña);
@@ -81,14 +80,14 @@ const Registro = () => {
 	}
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
-			<View style={globalStyles.contenido}>
-				<Text style={globalStyles.subtitulo}>¡Bienvenido!</Text>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
+			<View style={globalCSS.contenido}>
+				<Text style={globalCSS.subtitulo}>¡Bienvenido!</Text>
 				{errorNombre !== '' ? (<Text style={{ color: 'darkred' }}>{errorNombre}</Text>) : <></>}
 				<TextInput
 					label="Nombre"
 					value={nombre}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					onChangeText={text => setNombre(text)}
 				/>
@@ -96,7 +95,7 @@ const Registro = () => {
 				<TextInput
 					label="E-Mail"
 					value={email}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					onChangeText={text => setEmail(text)}
 				/>
@@ -104,7 +103,7 @@ const Registro = () => {
 				<TextInput
 					label="Contraseña"
 					value={contraseña}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					secureTextEntry
 					onChangeText={text => setContraseña(text)}
@@ -112,13 +111,13 @@ const Registro = () => {
 				<TextInput
 					label="Repetir Contraseña"
 					value={contraseñaRepetida}
-					style={globalStyles.input}
+					style={globalCSS.input}
 					mode='outlined'
 					secureTextEntry
 					onChangeText={text => setContraseñaRepetida(text)}
 				/>
 				<Button
-					style={globalStyles.boton}
+					style={globalCSS.boton}
 					icon=""
 					buttonColor={theme.colors.primary}
 					mode="contained"

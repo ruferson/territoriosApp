@@ -6,15 +6,16 @@ import InicioSesion from '../components/InicioSesion';
 import Registro from '../components/Registro';
 import Territorios from '../components/Territorios';
 import { auth } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
-const Home = () => {
+const Inicio = () => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [pestaña, setPestaña] = useState('signIn');
 	const [signedIn, setSignedIn] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const [offline, setOffline] = useState(false);
 
 
 	onAuthStateChanged(auth, (currentUser) => {
@@ -31,20 +32,20 @@ const Home = () => {
 			{
 				loading
 					? (
-						<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
-							<View style={globalStyles.contenido}>
-								<Text style={globalStyles.subtitulo}>
+						<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
+							<View style={globalCSS.contenido}>
+								<Text style={globalCSS.subtitulo}>
 									Probando a iniciar sesión...
 								</Text>
 								<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />
 							</View>
 						</View >
 					)
-					: signedIn
-						? <Territorios />
+					: signedIn || offline
+						? <Territorios offline={offline} setOffline={setOffline} />
 						: (
-							<ScrollView style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
-								<View style={[globalStyles.contenido, { marginTop: 100 }]}>
+							<ScrollView style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
+								<View style={[globalCSS.contenido, { marginTop: 100 }]}>
 									<SegmentedButtons
 										value={pestaña}
 										multiSelect={false}
@@ -61,6 +62,16 @@ const Home = () => {
 										]}
 									/>
 									{pestaña === 'signIn' ? <InicioSesion /> : <Registro />}
+									{/* <Button
+										style={[globalCSS.boton, {marginTop: 0}]}
+										icon=""
+										buttonColor={theme.colors.expired}
+										mode="contained"
+										compact
+										onPress={() => setOffline(true)}
+									>
+										USAR MODO OFFLINE
+									</Button> */}
 									<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />
 								</View>
 							</ScrollView >
@@ -70,4 +81,4 @@ const Home = () => {
 	)
 }
 
-export default Home;
+export default Inicio;

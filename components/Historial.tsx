@@ -1,8 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Card, IconButton, Text } from 'react-native-paper';
-import useHistorico from '../hooks/useHistorico';
-import globalStyles from '../styles/global';
+import { ActivityIndicator, IconButton, Text } from 'react-native-paper';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 import AñadirHistorial from './AñadirHistorial';
 import TarjetaHistorial from './TarjetaHistorial';
@@ -20,7 +19,7 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 		}
 	}, [historico, loadingHistorico]);
 
-	const entreFechas = (fecha: Date, idEditando?: string): boolean => {
+	const esEntreFechas = (fecha: Date, idEditando?: string): boolean => {
 		const yaEsta = historico.find((value: any) => {
 			if (idEditando) {
 				if (value.id === idEditando) {
@@ -47,7 +46,7 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 		})
 	}
 
-	const antiguaSinCerrar = (fecha: Date, idEditando?: string): boolean => {
+	const hayAntiguaSinCerrar = (fecha: Date, idEditando?: string): boolean => {
 		const esAntiguo = historico.find((value: any) => {
 			if (idEditando) {
 				if (value.id === idEditando) {
@@ -64,16 +63,16 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 		return listaOrdenada.map((item: any, idx: number) => {
 			return (
 				<TarjetaHistorial
-					key={idx} item={item} update={update} setUpdate={setUpdate} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
+					key={idx} item={item} update={update} setUpdate={setUpdate} esEntreFechas={esEntreFechas} contieneFechas={contieneFechas} hayAntiguaSinCerrar={hayAntiguaSinCerrar}
 				></TarjetaHistorial>
 			)
 		})
 	}
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-				<Text style={[globalStyles.subSubtitulo, {}]}>
+				<Text style={[globalCSS.subSubtitulo, {}]}>
 					Historial:
 				</Text>
 				{terminado ?
@@ -88,7 +87,7 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 					></IconButton> : <></>}
 			</View>
 			{adding ? <AñadirHistorial
-				id={territorioID} setAdding={setAdding} setUpdate={setUpdate} update={update} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
+				id={territorioID} setAdding={setAdding} setUpdate={setUpdate} update={update} esEntreFechas={esEntreFechas} contieneFechas={contieneFechas} hayAntiguaSinCerrar={hayAntiguaSinCerrar}
 			></AñadirHistorial> : <></>}
 
 			{!loadingHistorico ?

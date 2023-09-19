@@ -4,15 +4,14 @@ import { View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { auth, db } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import { territorioInterface } from '../interfaces/interfaces';
 
-const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, contieneFechas, antiguaSinCerrar }: any) => {
+const AñadirHistorial = ({ id, setAñadiendo, setUpdate, update, esEntreFechas, contieneFechas, hayAntiguaSinCerrar }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const [publicador, setPublicador] = useState('')
-	const [fechaSalida, setFechaSalida] = useState<Date>(new Date())
+	const [fechaSalida, setFechaSalida] = useState<Date | undefined>(new Date())
 	const [fechaEntrada, setFechaEntrada] = useState<Date>()
 	const [campaña, setCampaña] = useState('')
 	const [loading, setLoading] = useState(false);
@@ -29,7 +28,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 					setLoading(false);
 					return;
 				}
-				if (entreFechas(fechaEntrada)) {
+				if (esEntreFechas(fechaEntrada)) {
 					setMsg('Hay un histórico que incluye la fecha de entrada indicada.')
 					setLoading(false);
 					return;
@@ -42,14 +41,14 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			}
 
 			if (!fechaEntrada) {
-				if (antiguaSinCerrar(fechaSalida)) {
+				if (hayAntiguaSinCerrar(fechaSalida)) {
 					setMsg('No deberías añadir un histórico anterior a los actuales y que siga abierto.')
 					setLoading(false);
 					return;
 				}
 			}
 
-			if (entreFechas(fechaSalida)) {
+			if (esEntreFechas(fechaSalida)) {
 				setMsg('Hay un histórico que incluye la fecha salida indicada.')
 				setLoading(false);
 				return;
@@ -69,7 +68,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 					await updateDoc(doc(db, "territorios", id), { ultimaFecha: Timestamp.fromDate(fechaSalida) });
 				}
 				setLoading(false);
-				setAdding(false);
+				setAñadiendo(false);
 				setUpdate(update + 1)
 			} catch (error) {
 				console.log(error)
@@ -83,17 +82,17 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 	};
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background, marginBottom: '1%' }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background, marginBottom: '1%' }]}>
 			<TextInput
 				label="Nombre Publicador *"
 				value={publicador}
-				style={globalStyles.input}
+				style={globalCSS.input}
 				mode='outlined'
 				onChangeText={text => setPublicador(text)}
 			/>
 			<DatePickerInput
 				locale="es"
-				style={globalStyles.input}
+				style={globalCSS.input}
 				label="Fecha de salida *"
 				value={fechaSalida}
 				withModal={false}
@@ -108,7 +107,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			/>
 			<DatePickerInput
 				locale="es"
-				style={globalStyles.input}
+				style={globalCSS.input}
 				label="Fecha de entrada"
 				value={fechaEntrada}
 				withModal={false}
@@ -121,7 +120,7 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 				inputMode="start"
 				mode='outlined'
 			/>
-			<Text style={globalStyles.label}>Tipo: *</Text>
+			<Text style={globalCSS.label}>Tipo: *</Text>
 			<SegmentedButtons
 				value={campaña}
 				onValueChange={setCampaña}
@@ -139,9 +138,9 @@ const AñadirHistorial = ({ id, setAdding, setUpdate, update, entreFechas, conti
 			/>
 			{msg !== '' ? (<Text style={{ color: 'darkred' }}>{msg}</Text>) : <></>}
 			{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
-					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
+			<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 			<Button
-				style={globalStyles.boton}
+				style={globalCSS.boton}
 				icon=""
 				textColor={theme.colors.onSecondary}
 				buttonColor={theme.colors.secondary}

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Alert, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
 import { darkTheme, lightTheme } from '../styles/theme';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { deleteDoc, deleteField, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 import EditarHistorial from './EditarHistorial';
 
-const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas, antiguaSinCerrar }: any) => {
+const TarjetaHistorial = ({ item, update, setUpdate, esEntreFechas, contieneFechas, hayAntiguaSinCerrar }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const entrada = item.fechaEntrada ? item.fechaEntrada.toDate() : new Date();
@@ -126,7 +126,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 					mostrarEntrada
 						? (
 							<View style={{ marginHorizontal: 25 }}>
-								<Text style={globalStyles.label}>Añadiendo fecha de entrada</Text>
+								<Text style={globalCSS.label}>Añadiendo fecha de entrada</Text>
 								<DatePickerInput
 									theme={{
 										colors: {
@@ -134,7 +134,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 										},
 									}}
 									locale="es"
-									style={globalStyles.input}
+									style={globalCSS.input}
 									label="Fecha de entrada"
 									value={nuevaFechaEntrada}
 									withModal={false}
@@ -150,7 +150,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 								{msgFechaEntrada !== '' ? (<Text style={{ color: 'darkred' }}>{msgFechaEntrada}</Text>) : <></>}
 								{añadiendoFechaEntrada ? <ActivityIndicator style={{ marginTop: '7%' }} animating={añadiendoFechaEntrada} color={theme.colors.primary} /> : <></>}
 								<Button
-									style={globalStyles.boton}
+									style={globalCSS.boton}
 									icon=""
 									textColor={theme.colors.onSecondary}
 									buttonColor={theme.colors.secondary}
@@ -168,7 +168,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, entreFechas, contieneFechas
 					editing
 						? (
 							<EditarHistorial
-								item={item} setUpdate={setUpdate} update={update} entreFechas={entreFechas} contieneFechas={contieneFechas} antiguaSinCerrar={antiguaSinCerrar}
+								item={item} setUpdate={setUpdate} update={update} esEntreFechas={esEntreFechas} contieneFechas={contieneFechas} hayAntiguaSinCerrar={hayAntiguaSinCerrar}
 							></EditarHistorial>
 						)
 						: <></>}

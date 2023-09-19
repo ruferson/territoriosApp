@@ -8,10 +8,10 @@ import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-pick
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { auth, db, storage } from '../firebase/firebaseConfig';
 import { territorioInterface } from '../interfaces/interfaces';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 
-const AddTerritorio = ({ route }: { route: any }) => {
+const AñadirTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const { update, setUpdate, noExisteTer } = route.params;
@@ -21,18 +21,19 @@ const AddTerritorio = ({ route }: { route: any }) => {
 	const [barrio, setBarrio] = useState('')
 	const [tipo, setTipo] = useState('normal')
 	const [activo, setActivo] = useState('true')
+	const [image, setImage] = useState<ImagePickerResponse>();
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
 	const navigation = useNavigation();
-	const [image, setImage] = useState<ImagePickerResponse>();
 
 	onAuthStateChanged(auth, (currentUser) => {
 		if (auth === null) {
-			navigation.navigate('Home');
+			// @ts-ignore "NEVER"
+			navigation.navigate('Inicio');
 		}
 	});
 
-	const getBlobFromUri = async (uri: string): Blob => {
+	const getBlobFromUri = async (uri: string): Promise<Blob> => {
 		const blob: Blob = await new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.onload = function () {
@@ -65,7 +66,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 							numViviendas,
 							uid: auth.currentUser?.uid
 						}
-						if (image) {
+						if (image && image.assets) {
 							const uri: string = image.assets[0].uri || '';
 							const imgStorageRef = ref(storage, image.assets[0].fileName);
 							const imageBlob = await getBlobFromUri(uri)
@@ -96,29 +97,29 @@ const AddTerritorio = ({ route }: { route: any }) => {
 	};
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView>
-				<View style={globalStyles.contenido}>
-					<Text style={globalStyles.subtitulo}>Nuevo Territorio</Text>
+				<View style={globalCSS.contenido}>
+					<Text style={globalCSS.subtitulo}>Nuevo Territorio</Text>
 					<TextInput
 						label="Número *"
 						value={numero}
 						keyboardType='numeric'
-						style={globalStyles.input}
+						style={globalCSS.input}
 						mode='outlined'
 						onChangeText={text => setNumero(text.replace(/[^0-9]/g, ''))}
 					/>
 					<TextInput
 						label="Barrio *"
 						value={barrio}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						mode='outlined'
 						onChangeText={text => setBarrio(text)}
 					/>
 					<TextInput
 						label="Descripción"
 						value={descripcion}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						mode='outlined'
 						numberOfLines={7}
 						multiline
@@ -127,7 +128,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 					<TextInput
 						label="Número de Viviendas"
 						value={numViviendas}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						keyboardType='numeric'
 						mode='outlined'
 						onChangeText={text => setNumVivienas(text.replace(/[^0-9]/g, ''))}
@@ -136,7 +137,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						{image?.assets
 							?
 							<Button
-								style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
+								style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
 								icon=""
 								buttonColor={theme.colors.error}
 								mode="contained"
@@ -150,7 +151,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 							: <></>
 						}
 						<Button
-							style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, ...image?.assets ? { width: '48%' } : { width: '100%' } }]}
+							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...image?.assets ? { width: '48%' } : { width: '100%' } }]}
 							icon=""
 							buttonColor={theme.colors.secondary}
 							mode="contained"
@@ -174,7 +175,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						)
 						: (<></>)
 					}
-					<Text style={[globalStyles.label, { ...image?.assets && { marginTop: 20 } }]}>Tipo:</Text>
+					<Text style={[globalCSS.label, { ...image?.assets && { marginTop: 20 } }]}>Tipo:</Text>
 					<SegmentedButtons
 						value={tipo}
 						onValueChange={setTipo}
@@ -190,7 +191,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 						]}
 						style={{ marginBottom: 10 }}
 					/>
-					<Text style={globalStyles.label}>Dado de baja:</Text>
+					<Text style={globalCSS.label}>Dado de baja:</Text>
 					<SegmentedButtons
 						value={activo}
 						onValueChange={setActivo}
@@ -210,7 +211,7 @@ const AddTerritorio = ({ route }: { route: any }) => {
 					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 					<Button
 						disabled={loading}
-						style={[globalStyles.boton, { marginTop: 30 }]}
+						style={[globalCSS.boton, { marginTop: 30 }]}
 						icon=""
 						buttonColor={theme.colors.primary}
 						mode="contained"
@@ -239,4 +240,4 @@ const AddTerritorio = ({ route }: { route: any }) => {
 	);
 }
 
-export default AddTerritorio;
+export default AñadirTerritorio;

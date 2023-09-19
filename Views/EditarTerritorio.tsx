@@ -1,17 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, BackHandler, Image, ScrollView, View, useColorScheme } from 'react-native';
-import { ActivityIndicator, Button, Dialog, Portal, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { Alert, Image, ScrollView, View, useColorScheme } from 'react-native';
+import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { auth, db, storage } from '../firebase/firebaseConfig';
-import globalStyles from '../styles/global';
+import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
 import { onAuthStateChanged } from 'firebase/auth';
 import { territorioInterface } from '../interfaces/interfaces';
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
-const EditTerritorio = ({ route }: { route: any }) => {
+const EditarTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 	const { update, setUpdate, territorioData } = route.params;
@@ -50,11 +50,12 @@ const EditTerritorio = ({ route }: { route: any }) => {
 
 	onAuthStateChanged(auth, () => {
 		if (auth === null) {
-			navigation.navigate('Home');
+			// @ts-ignore "NEVER"
+			navigation.navigate('Inicio');
 		}
 	});
 
-	const getBlobFromUri = async (uri: string): Blob => {
+	const getBlobFromUri = async (uri: string): Promise<Blob> => {
 		const blob: Blob = await new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.onload = function () {
@@ -70,7 +71,6 @@ const EditTerritorio = ({ route }: { route: any }) => {
 
 		return blob;
 	};
-	console.log(territorioData.img)
 
 	const editTerritorioHandler = async () => {
 		if (barrio !== '' && tipo !== '' && activo !== '') {
@@ -87,8 +87,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 					uid: auth.currentUser?.uid
 				}
 				if (image) {
-					console.log(image, territorioData.img)
-					if (image !== 'delete') {
+					if (image !== 'delete' && image.assets) {
 						const uri: string = image.assets[0].uri || '';
 						const imgStorageRef = ref(storage, image.assets[0].fileName);
 						const imageBlob = await getBlobFromUri(uri);
@@ -96,8 +95,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 						const url = await getDownloadURL(imgStorageRef);
 						newTerritorioData.img = { path: imgStorageRef.fullPath, url };
 					}
-					if (territorioData.img && (image === 'delete' || territorioData.img.path !== image.assets[0].fileName)) {
-						console.log(territorioData.img.path)
+					if (territorioData.img && (image === 'delete' || (image.assets && territorioData.img.path !== image.assets[0].fileName))) {
 						const imgStorageRef = ref(storage, territorioData.img.path);
 						await deleteObject(imgStorageRef);
 					}
@@ -117,21 +115,21 @@ const EditTerritorio = ({ route }: { route: any }) => {
 	};
 
 	return (
-		<View style={[globalStyles.contenedor, { backgroundColor: theme.colors.background }]}>
+		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView>
-				<View style={globalStyles.contenido}>
-					<Text style={globalStyles.subtitulo}>Editando Territorio Número {territorioData.numero}</Text>
+				<View style={globalCSS.contenido}>
+					<Text style={globalCSS.subtitulo}>Editando Territorio Número {territorioData.numero}</Text>
 					<TextInput
 						label="Barrio *"
 						value={barrio}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						mode='outlined'
 						onChangeText={text => setBarrio(text)}
 					/>
 					<TextInput
 						label="Descripción"
 						value={descripcion}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						mode='outlined'
 						numberOfLines={7}
 						multiline
@@ -140,16 +138,16 @@ const EditTerritorio = ({ route }: { route: any }) => {
 					<TextInput
 						label="Número de Viviendas"
 						value={numViviendas}
-						style={globalStyles.input}
+						style={globalCSS.input}
 						keyboardType='numeric'
 						mode='outlined'
 						onChangeText={text => setNumViviendas(text.replace(/[^0-9]/g, ''))}
 					/>
-					<View style={{ ...((image?.assets || territorioData.img?.url) && image !== 'delete') && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
-						{((image?.assets || territorioData.img?.url) && image !== 'delete')
+					<View style={{ ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
+						{(image && image !== 'delete' && (image?.assets || territorioData.img?.url))
 							?
 							<Button
-								style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
+								style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
 								icon=""
 								buttonColor={theme.colors.error}
 								mode="contained"
@@ -178,7 +176,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 							: <></>
 						}
 						<Button
-							style={[globalStyles.boton, { borderRadius: 0, marginBottom: 15, ...((image?.assets || territorioData.img?.url) && image !== 'delete') ? { width: '48%' } : { width: '100%' } }]}
+							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) ? { width: '48%' } : { width: '100%' } }]}
 							icon=""
 							buttonColor={theme.colors.secondary}
 							mode="contained"
@@ -205,21 +203,21 @@ const EditTerritorio = ({ route }: { route: any }) => {
 							}}
 						>
 							<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>
-								{((image?.assets || territorioData.img?.url) && image !== 'delete') ? 'Cambiar' : 'Añadir'} Imagen
+								{(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) ? 'Cambiar' : 'Añadir'} Imagen
 							</Text>
 						</Button>
 					</View>
 
-					{((image?.assets || territorioData.img?.url) && image !== 'delete')
+					{(image && image !== 'delete' && (image.assets || territorioData.img?.url))
 						? (
 							<Image
 								style={{ width: '100%', height: 230, borderRadius: 5 }}
-								source={{ uri: image?.assets[0].uri || territorioData.img?.url }}
+								source={{ uri: image.assets ? image.assets[0].uri : territorioData.img?.url }}
 							/>
 						)
 						: (<></>)
 					}
-					<Text style={[globalStyles.label, { ...((image?.assets || territorioData.img?.url) && image !== 'delete') && { marginTop: 20 } }]}>Tipo:</Text>
+					<Text style={[globalCSS.label, { ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) && { marginTop: 20 } }]}>Tipo:</Text>
 					<SegmentedButtons
 						value={tipo}
 						onValueChange={setTipo}
@@ -235,7 +233,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 						]}
 						style={{ marginBottom: 10 }}
 					/>
-					<Text style={globalStyles.label}>Dado de baja:</Text>
+					<Text style={globalCSS.label}>Dado de baja:</Text>
 					<SegmentedButtons
 						value={activo}
 						onValueChange={setActivo}
@@ -254,7 +252,7 @@ const EditTerritorio = ({ route }: { route: any }) => {
 					{msg !== '' ? (<Text style={{ color: 'darkred', fontSize: 20, textAlign: 'center' }}>{msg}</Text>) : <></>}
 					<Text style={{ color: 'darkred', fontSize: 15, textAlign: 'left' }}>* Obligatorio</Text>
 					<Button
-						style={globalStyles.boton}
+						style={globalCSS.boton}
 						icon=""
 						buttonColor={theme.colors.primary}
 						mode="contained"
@@ -270,4 +268,4 @@ const EditTerritorio = ({ route }: { route: any }) => {
 	);
 }
 
-export default EditTerritorio;
+export default EditarTerritorio;
