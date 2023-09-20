@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, RefreshControl, ScrollView, View, useColorScheme } from 'react-native';
+import { Alert, Image, RefreshControl, ScrollView, View, useColorScheme, Linking } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import Historial from '../components/Historial';
 import { auth, db } from '../firebase/firebaseConfig';
@@ -85,6 +85,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 	return (
 		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
+				nestedScrollEnabled={true}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
@@ -139,23 +140,34 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								>
 									<Text style={{ fontSize: 20, fontWeight: 'bold', paddingTop: 4 }}>{activo ? 'Dar de baja' : 'Reactivar'}</Text>
 								</Button>
-								<Text style={[globalCSS.subtitulo,
+								<Text style={[globalCSS.titulo,
 								{
 									...(!territorioData.ultimaFecha && territorioData.activo) && { color: theme.colors.strongPrimary },
 									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
-									...!territorioData.activo && { color: theme.colors.error }
+									...!territorioData.activo && { color: theme.colors.error },
+									marginTop: 15,
+									marginBottom: 0,
 								}
 								]}>Número {numero}{esCaducado(territorioData) && ' (¡CADUCADO!)'}</Text>
+								{territorioData.enlace !== '' ?
+									<Text
+										style={[globalCSS.subtitulo, { textAlign: 'center', color: theme.colors.linkText, marginBottom: 15 }]}
+										{...territorioData.enlace !== '' && { onPress: () => Linking.openURL(territorioData.enlace) }}
+									>
+										Enlace
+									</Text>
+									: <></>
+								}
 								{territorioData.img?.url ?
 									(
-										<>
-											<Text style={[globalCSS.subSubtitulo, { marginVertical: 0 }]}>Imagen:</Text>
+										<View>
 											<Image
-												style={{ width: '100%', height: 230, borderRadius: 5 }}
+												resizeMode='cover'
+												style={{ width: '100%', height: 230, borderRadius: 15 }}
 												source={{ uri: territorioData.img?.url }}
 												loadingIndicatorSource={require('../assets/simple_ajax.gif')}
 											/>
-										</>
+										</View>
 									)
 									: <></>
 								}

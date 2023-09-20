@@ -9,7 +9,7 @@ import TarjetaHistorial from './TarjetaHistorial';
 const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioID }: any) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-	const [adding, setAdding] = useState(false);
+	const [adding, setAñadiendo] = useState(false);
 	const [terminado, setTerminado] = useState(false);
 
 	useEffect(() => {
@@ -83,11 +83,11 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 						iconColor={theme.colors.onSecondary}
 						size={40}
 						animated
-						onPress={() => setAdding(!adding)}
+						onPress={() => setAñadiendo(!adding)}
 					></IconButton> : <></>}
 			</View>
 			{adding ? <AñadirHistorial
-				id={territorioID} setAdding={setAdding} setUpdate={setUpdate} update={update} esEntreFechas={esEntreFechas} contieneFechas={contieneFechas} hayAntiguaSinCerrar={hayAntiguaSinCerrar}
+				id={territorioID} setAñadiendo={setAñadiendo} setUpdate={setUpdate} update={update} esEntreFechas={esEntreFechas} contieneFechas={contieneFechas} hayAntiguaSinCerrar={hayAntiguaSinCerrar}
 			></AñadirHistorial> : <></>}
 
 			{!loadingHistorico ?

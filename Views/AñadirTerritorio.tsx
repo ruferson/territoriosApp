@@ -21,7 +21,8 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 	const [barrio, setBarrio] = useState('')
 	const [tipo, setTipo] = useState('normal')
 	const [activo, setActivo] = useState('true')
-	const [image, setImage] = useState<ImagePickerResponse>();
+	const [imagen, setImagen] = useState<ImagePickerResponse>();
+	const [enlace, setEnlace] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
 	const navigation = useNavigation();
@@ -64,11 +65,12 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 							descripcion,
 							negocios: tipo === 'negocios',
 							numViviendas,
+							enlace,
 							uid: auth.currentUser?.uid
 						}
-						if (image && image.assets) {
-							const uri: string = image.assets[0].uri || '';
-							const imgStorageRef = ref(storage, image.assets[0].fileName);
+						if (imagen && imagen.assets) {
+							const uri: string = imagen.assets[0].uri || '';
+							const imgStorageRef = ref(storage, imagen.assets[0].fileName);
 							const imageBlob = await getBlobFromUri(uri)
 							await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: numero, uid: auth.currentUser?.uid || '' } });
 							const url = await getDownloadURL(imgStorageRef);
@@ -117,6 +119,13 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 						onChangeText={text => setBarrio(text)}
 					/>
 					<TextInput
+						label="Enlace"
+						value={enlace}
+						style={globalCSS.input}
+						mode='outlined'
+						onChangeText={text => setEnlace(text)}
+					/>
+					<TextInput
 						label="Descripción"
 						value={descripcion}
 						style={globalCSS.input}
@@ -133,8 +142,8 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 						mode='outlined'
 						onChangeText={text => setNumVivienas(text.replace(/[^0-9]/g, ''))}
 					/>
-					<View style={{ ...image?.assets && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
-						{image?.assets
+					<View style={{ ...imagen?.assets && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
+						{imagen?.assets
 							?
 							<Button
 								style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
@@ -143,7 +152,7 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 								mode="contained"
 								compact
 								onPress={() => {
-									setImage(undefined);
+									setImagen(undefined);
 								}}
 							>
 								<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Borrar Imagen</Text>
@@ -151,31 +160,31 @@ const AñadirTerritorio = ({ route }: { route: any }) => {
 							: <></>
 						}
 						<Button
-							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...image?.assets ? { width: '48%' } : { width: '100%' } }]}
+							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...imagen?.assets ? { width: '48%' } : { width: '100%' } }]}
 							icon=""
 							buttonColor={theme.colors.secondary}
 							mode="contained"
 							compact
 							onPress={() => {
 								launchImageLibrary({ mediaType: 'photo', selectionLimit: 1, quality: 0.5 }, async (img) => {
-									setImage(img);
+									setImagen(img);
 								});
 							}}
 						>
-							<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>{image?.assets ? 'Cambiar' : 'Añadir'} Imagen</Text>
+							<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>{imagen?.assets ? 'Cambiar' : 'Añadir'} Imagen</Text>
 						</Button>
 					</View>
 
-					{image?.assets
+					{imagen?.assets
 						? (
 							<Image
 								style={{ width: '100%', height: 230, borderRadius: 5 }}
-								source={{ uri: image.assets[0].uri }}
+								source={{ uri: imagen.assets[0].uri }}
 							/>
 						)
 						: (<></>)
 					}
-					<Text style={[globalCSS.label, { ...image?.assets && { marginTop: 20 } }]}>Tipo:</Text>
+					<Text style={[globalCSS.label, { ...imagen?.assets && { marginTop: 20 } }]}>Tipo:</Text>
 					<SegmentedButtons
 						value={tipo}
 						onValueChange={setTipo}

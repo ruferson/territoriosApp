@@ -7,6 +7,7 @@ export interface territorioInterface {
 	'negocios': boolean,
 	'descripcion'?: string,
 	'numViviendas'?: string,
+	'enlace'?: string,
 	'img'?: {
 		path: string,
 		url: string
