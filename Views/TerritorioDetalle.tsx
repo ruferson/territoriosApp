@@ -85,6 +85,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 	return (
 		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
+				nestedScrollEnabled={true}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
@@ -159,14 +160,14 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								}
 								{territorioData.img?.url ?
 									(
-										<>
+										<View>
 											<Image
-												resizeMode='center'
+												resizeMode='cover'
 												style={{ width: '100%', height: 230, borderRadius: 15 }}
 												source={{ uri: territorioData.img?.url }}
 												loadingIndicatorSource={require('../assets/simple_ajax.gif')}
 											/>
-										</>
+										</View>
 									)
 									: <></>
 								}
