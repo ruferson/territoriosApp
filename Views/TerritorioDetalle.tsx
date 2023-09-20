@@ -156,7 +156,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 									>
 										Enlace
 									</Text>
-									: <></>
+									: <View style={{ marginBottom: 15 }}></View>
 								}
 								{territorioData.img?.url ?
 									(
