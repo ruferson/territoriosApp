@@ -78,6 +78,8 @@ export const lightTheme = {
 		onAvailable: "#000000", // Texto en color disponible
 		availableContainer: "#c5e7d7", // Contenedor del color disponible
 		onAvailableContainer: "#000000", // Texto en contenedor del color disponible
+    linkText: "#996600", // Color de texto de enlaces en el tema de light
+		pureBackground: "#FFFFFF",
 	}
 };
 
@@ -157,5 +159,7 @@ export const darkTheme = {
 		onAvailable: "#FFFFFF", // Texto en color disponible
 		availableContainer: "#2E5042", // Contenedor del color disponible
 		onAvailableContainer: "#FFFFFF", // Texto en contenedor del color disponible
+    linkText: "#a59573", // Color de texto de enlaces en el tema de dark,
+		pureBackground: "#000000",
 	}
 };

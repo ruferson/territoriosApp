@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@likashefqet/react-native-image-zoom": "^2.1.1",
     "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",

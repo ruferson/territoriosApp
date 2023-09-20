@@ -8,6 +8,7 @@ import Territorios from '../components/Territorios';
 import { auth } from '../firebase/firebaseConfig';
 import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
+import Verificar from '../components/Verificar';
 
 const Inicio = () => {
 	const colorScheme = useColorScheme();
@@ -16,10 +17,14 @@ const Inicio = () => {
 	const [signedIn, setSignedIn] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [offline, setOffline] = useState(false);
+	const [verificado, setVerificado] = useState(false)
 
 
 	onAuthStateChanged(auth, (currentUser) => {
 		if (auth !== null) {
+			if (currentUser) {
+				setVerificado(currentUser.emailVerified);
+			}
 			if (setSignedIn) {
 				setSignedIn(!!currentUser);
 			}
@@ -37,15 +42,15 @@ const Inicio = () => {
 								<Text style={globalCSS.subtitulo}>
 									Probando a iniciar sesión...
 								</Text>
-								<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />
+								{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
 							</View>
 						</View >
 					)
 					: signedIn || offline
-						? <Territorios offline={offline} setOffline={setOffline} />
+						? !verificado ? <Verificar /> : <Territorios offline={offline} setOffline={setOffline} />
 						: (
-							<ScrollView style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
-								<View style={[globalCSS.contenido, { marginTop: 100 }]}>
+							<ScrollView nestedScrollEnabled={true} style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
+								<View style={[globalCSS.contenido, { marginTop: 50 }]}>
 									<SegmentedButtons
 										value={pestaña}
 										multiSelect={false}
@@ -72,7 +77,7 @@ const Inicio = () => {
 									>
 										USAR MODO OFFLINE
 									</Button> */}
-									<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />
+									{loading ? <ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} /> : <></>}
 								</View>
 							</ScrollView >
 						)

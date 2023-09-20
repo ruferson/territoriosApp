@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, View, useColorScheme } from 'react-native';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
@@ -22,8 +22,8 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 	const [activo, setActivo] = useState(territorioData.activo ? 'true' : 'false')
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('')
-	const [image, setImage] = useState<ImagePickerResponse | 'delete'>();
-	const [reserveImage, setReserveImage] = useState<ImagePickerResponse>();
+	const [enlace, setEnlace] = useState(territorioData.enlace);
+	const [imagen, setImagen] = useState<ImagePickerResponse | 'delete'>();
 	const [guardado, setGuardado] = useState(false);
 	const navigation = useNavigation();
 
@@ -84,23 +84,26 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 					descripcion,
 					negocios: tipo === 'negocios',
 					numViviendas,
+					enlace,
 					uid: auth.currentUser?.uid
 				}
-				if (image) {
-					if (image !== 'delete' && image.assets) {
-						const uri: string = image.assets[0].uri || '';
-						const imgStorageRef = ref(storage, image.assets[0].fileName);
+				if (imagen) {
+					if (imagen !== 'delete' && imagen.assets) {
+						const uri: string = imagen.assets[0].uri || '';
+						const imgStorageRef = ref(storage, imagen.assets[0].fileName);
 						const imageBlob = await getBlobFromUri(uri);
 						await uploadBytes(imgStorageRef, imageBlob, { customMetadata: { terID: territorioData.id } });
 						const url = await getDownloadURL(imgStorageRef);
 						newTerritorioData.img = { path: imgStorageRef.fullPath, url };
 					}
-					if (territorioData.img && (image === 'delete' || (image.assets && territorioData.img.path !== image.assets[0].fileName))) {
+					if (territorioData.img && (imagen === 'delete' || (imagen.assets && territorioData.img.path !== imagen.assets[0].fileName))) {
+						console.log(imagen)
 						const imgStorageRef = ref(storage, territorioData.img.path);
 						await deleteObject(imgStorageRef);
 					}
 				}
-				await setDoc(doc(db, "territorios", territorioData.numero), newTerritorioData);
+				// @ts-ignore "STRING"
+				await updateDoc(doc(db, "territorios", territorioData.id), newTerritorioData);
 				setLoading(false);
 				setGuardado(true);
 				setUpdate(update + 1)
@@ -127,6 +130,13 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 						onChangeText={text => setBarrio(text)}
 					/>
 					<TextInput
+						label="Enlace"
+						value={enlace}
+						style={globalCSS.input}
+						mode='outlined'
+						onChangeText={text => setEnlace(text)}
+					/>
+					<TextInput
 						label="Descripción"
 						value={descripcion}
 						style={globalCSS.input}
@@ -143,8 +153,8 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 						mode='outlined'
 						onChangeText={text => setNumViviendas(text.replace(/[^0-9]/g, ''))}
 					/>
-					<View style={{ ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
-						{(image && image !== 'delete' && (image?.assets || territorioData.img?.url))
+					<View style={{ ...((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url) && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
+						{((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url)
 							?
 							<Button
 								style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
@@ -153,7 +163,7 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 								mode="contained"
 								compact
 								onPress={() => {
-									if (territorioData.img && !image) {
+									if (territorioData.img && !imagen) {
 										Alert.alert(
 											'¿Estás seguro de que quieres eliminar la imagen que está subida?',
 											'Solo podrás recuperarla si cancelas la edición del territorio.',
@@ -162,12 +172,12 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 												{
 													text: 'Sí, eliminar',
 													style: 'destructive',
-													onPress: () => setImage('delete'),
+													onPress: () => setImagen('delete'),
 												},
 											]
 										);
 									} else {
-										setImage('delete');
+										setImagen('delete');
 									}
 								}}
 							>
@@ -176,14 +186,14 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 							: <></>
 						}
 						<Button
-							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) ? { width: '48%' } : { width: '100%' } }]}
+							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url) ? { width: '48%' } : { width: '100%' } }]}
 							icon=""
 							buttonColor={theme.colors.secondary}
 							mode="contained"
 							compact
 							onPress={() => {
 								launchImageLibrary({ mediaType: 'photo', selectionLimit: 1, quality: 0.5 }, async (img) => {
-									if (territorioData.img && !image) {
+									if (territorioData.img && !imagen) {
 										Alert.alert(
 											'¿Estás seguro de que quieres cambiar la imagen que está subida?',
 											'Solo podrás recuperarla si cancelas la edición del territorio.',
@@ -192,32 +202,32 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 												{
 													text: 'Sí, cambiar',
 													style: 'destructive',
-													onPress: () => setImage(img),
+													onPress: () => setImagen(img),
 												},
 											]
 										);
 									} else {
-										setImage(img);
+										setImagen(img);
 									}
 								});
 							}}
 						>
 							<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>
-								{(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) ? 'Cambiar' : 'Añadir'} Imagen
+								{(imagen && imagen !== 'delete' && (imagen?.assets || territorioData.img?.url)) ? 'Cambiar' : 'Añadir'} Imagen
 							</Text>
 						</Button>
 					</View>
 
-					{(image && image !== 'delete' && (image.assets || territorioData.img?.url))
+					{((imagen && imagen !== 'delete' && imagen.assets) || territorioData.img?.url)
 						? (
 							<Image
 								style={{ width: '100%', height: 230, borderRadius: 5 }}
-								source={{ uri: image.assets ? image.assets[0].uri : territorioData.img?.url }}
+								source={{ uri: (imagen !== 'delete' && imagen?.assets) ? imagen.assets[0].uri : territorioData.img?.url }}
 							/>
 						)
 						: (<></>)
 					}
-					<Text style={[globalCSS.label, { ...(image && image !== 'delete' && (image?.assets || territorioData.img?.url)) && { marginTop: 20 } }]}>Tipo:</Text>
+					<Text style={[globalCSS.label, { ...(imagen && imagen !== 'delete' && (imagen?.assets || territorioData.img?.url)) && { marginTop: 20 } }]}>Tipo:</Text>
 					<SegmentedButtons
 						value={tipo}
 						onValueChange={setTipo}
