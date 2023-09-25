@@ -17,7 +17,6 @@ const Historial = ({ historico, loadingHistorico, update, setUpdate, territorioI
 			const terminado = historico.length === 0 || !historico.find((value: any) => !value.fechaEntrada);
 			setTerminado(terminado);
 		}
-
 	}, [historico, loadingHistorico]);
 
 	const esEntreFechas = (fecha: Date, idEditando?: string): boolean => {
