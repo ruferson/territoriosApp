@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { FieldValue, deleteField, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { deleteField, doc, updateDoc } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, View, useColorScheme } from 'react-native';
+import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { auth, db, storage } from '../firebase/firebaseConfig';
+import { territorioInterface } from '../interfaces/interfaces';
 import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import { onAuthStateChanged } from 'firebase/auth';
-import { territorioInterface } from '../interfaces/interfaces';
-import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const EditarTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
