@@ -1,8 +1,9 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { auth, db } from '../firebase/firebaseConfig';
+import { historicoInterface } from '../interfaces/interfaces';
 
-export const getHistorico = async (id: string) => {
+export const getHistorico = async (id: string): Promise<historicoInterface[]> => {
 	try {
 		if (auth.currentUser) {
 			const collectionRef = collection(db, "territorios", id, 'historico');

@@ -79,7 +79,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 5
-        versionName "v0.7.0-0000"
+        versionName "v0.8.0-0000"
         minSdk 21
         targetSdk 33
     }

@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { deleteField, doc, updateDoc } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, View, useColorScheme } from 'react-native';
+import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import { ActivityIndicator, Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { auth, db, storage } from '../firebase/firebaseConfig';
+import { territorioInterface } from '../interfaces/interfaces';
 import globalCSS from '../styles/global';
 import { darkTheme, lightTheme } from '../styles/theme';
-import { onAuthStateChanged } from 'firebase/auth';
-import { territorioInterface } from '../interfaces/interfaces';
-import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const EditarTerritorio = ({ route }: { route: any }) => {
 	const colorScheme = useColorScheme();
@@ -85,8 +85,8 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 					negocios: tipo === 'negocios',
 					numViviendas,
 					enlace,
-					uid: auth.currentUser?.uid
-				}
+					uid: auth.currentUser?.uid || ''
+				};
 				if (imagen) {
 					if (imagen !== 'delete' && imagen.assets) {
 						const uri: string = imagen.assets[0].uri || '';
@@ -97,8 +97,10 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 						newTerritorioData.img = { path: imgStorageRef.fullPath, url };
 					}
 					if (territorioData.img && (imagen === 'delete' || (imagen.assets && territorioData.img.path !== imagen.assets[0].fileName))) {
-						console.log(imagen)
 						const imgStorageRef = ref(storage, territorioData.img.path);
+						await updateDoc(doc(db, "territorios", territorioData.id), {
+							img: deleteField()
+						});
 						await deleteObject(imgStorageRef);
 					}
 				}
@@ -153,8 +155,8 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 						mode='outlined'
 						onChangeText={text => setNumViviendas(text.replace(/[^0-9]/g, ''))}
 					/>
-					<View style={{ ...((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url) && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
-						{((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url)
+					<View style={{ ...((imagen && imagen !== 'delete' && imagen?.assets) || (territorioData.img?.url && imagen !== 'delete')) && { flexDirection: 'row', width: '100%', justifyContent: 'space-between' } }}>
+						{((imagen && imagen !== 'delete' && imagen?.assets) || (territorioData.img?.url && imagen !== 'delete'))
 							?
 							<Button
 								style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, width: '48%' }]}
@@ -186,7 +188,7 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 							: <></>
 						}
 						<Button
-							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...((imagen && imagen !== 'delete' && imagen?.assets) || territorioData.img?.url) ? { width: '48%' } : { width: '100%' } }]}
+							style={[globalCSS.boton, { borderRadius: 0, marginBottom: 15, ...((imagen && imagen !== 'delete' && imagen?.assets) || (territorioData.img?.url && imagen !== 'delete')) ? { width: '48%' } : { width: '100%' } }]}
 							icon=""
 							buttonColor={theme.colors.secondary}
 							mode="contained"
@@ -218,11 +220,11 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 						</Button>
 					</View>
 
-					{((imagen && imagen !== 'delete' && imagen.assets) || territorioData.img?.url)
+					{((imagen && imagen !== 'delete' && imagen.assets) || (territorioData.img?.url && imagen !== 'delete'))
 						? (
 							<Image
-								style={{ width: '100%', height: 230, borderRadius: 5 }}
-								source={{ uri: (imagen !== 'delete' && imagen?.assets) ? imagen.assets[0].uri : territorioData.img?.url }}
+								style={{ width: '100%', height: 230, borderRadius: 15 }}
+								source={{ uri: (imagen?.assets) ? imagen.assets[0].uri : territorioData.img?.url }}
 							/>
 						)
 						: (<></>)

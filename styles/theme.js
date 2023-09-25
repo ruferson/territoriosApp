@@ -151,7 +151,7 @@ export const darkTheme = {
 		strongExpired: "#9ea172", // Color de expiración fuerte
 		expired: "#3b3c2a",  // Color de expiración
 		onExpired: "#FFFFFF", // Texto en color de expiración
-		expiredContainer: "#484941",  // Contenedor del color de expiración
+		expiredContainer: "#3b3c2a",  // Contenedor del color de expiración
 		onExpiredContainer: "#FFFFFF", // Texto en contenedor del color de expiración
 
 		strongAvailable: "#79b985", // Color disponible fuerte

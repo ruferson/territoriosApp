@@ -65,7 +65,7 @@ const AñadirHistorial = ({ id, setAñadiendo, setUpdate, update, esEntreFechas,
 				}
 				await addDoc(collection(db, "territorios", id, 'historico'), historicoData);
 				if (!fechaEntrada) {
-					await updateDoc(doc(db, "territorios", id), { ultimaFecha: Timestamp.fromDate(fechaSalida) });
+					await updateDoc(doc(db, "territorios", id), { ultimaFechaSalida: Timestamp.fromDate(fechaSalida) });
 				}
 				setLoading(false);
 				setAñadiendo(false);

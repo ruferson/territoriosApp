@@ -1,25 +1,38 @@
-import { collection, getDocs, query, where } from '@firebase/firestore';
+import { collection, getDocs, query, where, QueryDocumentSnapshot } from '@firebase/firestore';
 import { auth, db } from '../firebase/firebaseConfig';
+import { obtenerUltimaEntrega } from '../helpers/Calculos';
+import { territorioInterface } from '../interfaces/interfaces';
 
-export const getTerritorios = async () => {
-	const collectionRef = collection(db, "territorios");
+// Cambiamos el tipo de retorno para hacerlo más específico.
+export const getTerritorios = async (): Promise<territorioInterface[]> => {
+  try {
+    // Verificamos si el usuario está autenticado.
+    if (!auth.currentUser) {
+      throw new Error('¡No has iniciado sesión!');
+    }
 
-	try {
-		if (auth.currentUser) {
-			const querySnapshot = await getDocs(query(collectionRef, where("uid", "==", auth.currentUser.uid)));
+    const collectionRef = collection(db, "territorios");
+    const querySnapshot = await getDocs(query(collectionRef, where("uid", "==", auth.currentUser.uid)));
 
-			const territorios: any = [];
+    // Usamos Promise.all para paralelizar las llamadas a obtenerUltimaEntrega.
+    const territoriosPromises: Promise<any>[] = [];
 
-			await querySnapshot.forEach(async (doc) => {
-				territorios.push({ id: doc.id, ...doc.data() });
-			});
+    querySnapshot.forEach((doc) => {
+      const ultimaFechaEntregaPromise = obtenerUltimaEntrega(doc.id)
+        .then(ultimaFechaEntrega => {
+          const territorio = { id: doc.id, ...doc.data(), ultimaFechaEntrega };
+          return territorio;
+        });
 
-			return territorios;
-		} else {
-			throw new Error('¡No has iniciado sesión!');
-		}
-	} catch (error) {
-		console.error("Error al obtener los territorios:", error);
-		return [];
-	}
+      territoriosPromises.push(ultimaFechaEntregaPromise);
+    });
+
+    // Esperamos a que todas las promesas se resuelvan.
+    const territorios: territorioInterface[] = await Promise.all(territoriosPromises);
+
+    return territorios;
+  } catch (error) {
+    console.error("Error al obtener los territorios:", error);
+    return [];
+  }
 };
