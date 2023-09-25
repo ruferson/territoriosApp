@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getHistorico } from '../services/getHistorico';
+import { historicoInterface } from '../interfaces/interfaces';
 
 
 const useHistorico = (id: string | null, update: number) => {
-	const [historico, setHistorico] = useState<any[]>([]);
+	const [historico, setHistorico] = useState<historicoInterface[]>([]);
 	const [loadingHistorico, setLoading] = useState(true);
 
 	const obtainHistorico = () => {

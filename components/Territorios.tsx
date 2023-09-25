@@ -12,16 +12,17 @@ import { auth } from '../firebase/firebaseConfig';
 const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: React.Dispatch<React.SetStateAction<boolean>> }) => {
 	const colorScheme = useColorScheme();
 	const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-	const [page, setPage] = useState<number>(0);
-	const numberOfItemsPerPageList = [4, 6];
-	const [territoriosPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[1]);
+	const [pagina, setPagina] = useState<number>(0);
+	const numberOfItemsPerPageList = [4, 6, 8, 12];
+	const [territoriosPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[0]);
 
+	const [orden, setOrden] = useState<string>('numero');
 	const [update, setUpdate] = useState<number>(0);
-	const { territorios, loading } = useTerritorios(update)
-	const [territoriosList, setTerritoriosList] = useState<any[]>([])
-	const from = page * territoriosPerPage;
-	const to = Math.min((page + 1) * territoriosPerPage, territorios.length);
-	const [refreshing, setRefreshing] = useState(false);
+	const { territorios, loading } = useTerritorios(update, orden)
+	const [territoriosLista, setTerritoriosLista] = useState<territorioInterface[]>([])
+	const desde = pagina * territoriosPerPage;
+	const hasta = Math.min((pagina + 1) * territoriosPerPage, territorios.length);
+	const [recargando, setRecargando] = useState(false);
 	const [filtrando, setFiltrando] = useState(false);
 	const [filtroBarrio, setFiltroBarrio] = useState<string>('');
 	const [filtroViv, setFiltroViv] = useState<string>('');
@@ -32,15 +33,15 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 	const navigation = useNavigation();
 
 	useEffect(() => {
-		setRefreshing(loading);
-		setPage(0);
+		setRecargando(loading);
+		setPagina(0);
 		if (territorios.length) {
-			setTerritoriosList(territorios);
+			setTerritoriosLista(territorios);
 		}
 	}, [territoriosPerPage, loading, territorios]);
 
 	const onRefresh = () => {
-		setUpdate(update + 1);
+		setUpdate(currUpdate => currUpdate + 1);
 	};
 
 	const noExisteTer = (numero: string) => {
@@ -62,19 +63,19 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 			? filteredTerritorios.filter((ter) => ter.negocios === (filtroNegocios[0] === 'negocios'))
 			: filteredTerritorios;
 		filteredTerritorios = filtroDisponibles.length === 1
-			? filteredTerritorios.filter((ter) => (filtroDisponibles[0] === 'disponible') ? (!ter.ultimaFecha && ter.activo) : (!!ter.ultimaFecha))
+			? filteredTerritorios.filter((ter) => (filtroDisponibles[0] === 'disponible') ? (!ter.ultimaFechaSalida && ter.activo) : (!!ter.ultimaFechaSalida))
 			: filteredTerritorios;
 		filteredTerritorios = filtroCaducado.length === 1
 			? filteredTerritorios.filter((ter) => esCaducado(ter) === (filtroCaducado[0] === 'caducados'))
 			: filteredTerritorios;
-		setTerritoriosList(filteredTerritorios);
+		setTerritoriosLista(filteredTerritorios);
 	}
 
 	return (
 		<View style={[globalCSS.contenedor, { backgroundColor: theme.colors.background }]}>
 			<ScrollView
 				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+					<RefreshControl refreshing={recargando} onRefresh={onRefresh} colors={[theme.colors.primary]} />
 				}
 			>
 				<View style={[globalCSS.contenido, { marginTop: 30, marginHorizontal: 80, flexDirection: 'row', justifyContent: 'space-between' }]}>
@@ -216,7 +217,7 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 										setFiltroDisponibles([]);
 										setFiltroBarrio('');
 										setFiltroViv('');
-										setTerritoriosList(territorios);
+										setTerritoriosLista(territorios);
 									}}
 								>
 									<Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold', paddingTop: 2 }}>Limpiar Filtros</Text>
@@ -235,9 +236,31 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 						</View>
 					)
 					: <></>}
+				<View
+					style={[globalCSS.contenido, { marginTop: 0 }]}
+				>
+					<Text style={[{ marginTop: 0, marginBottom: 10 }]}>Ordenar por:</Text>
+					<SegmentedButtons
+						value={orden}
+						multiSelect={false}
+						onValueChange={setOrden}
+						buttons={[
+							{
+								value: 'numero',
+								label: 'Numero',
+								showSelectedCheck: true
+							},
+							{
+								value: 'tiempo',
+								label: 'Tiempo',
+								showSelectedCheck: true
+							},
+						]}
+					/>
+				</View>
 				{loading
 					? (<ActivityIndicator style={{ marginTop: '7%' }} animating={loading} color={theme.colors.primary} />)
-					: territoriosList.length ? (
+					: territoriosLista.length ? (
 						<View
 							style={[globalCSS.contenido, {
 								margin: '1%',
@@ -261,11 +284,11 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 											<DataTable.Title textStyle={{ fontSize: 15 }} numeric>Tipo</DataTable.Title>
 										</DataTable.Header>
 
-										{territoriosList.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).slice(from, to).map((item: territorioInterface) => (
+										{territoriosLista.slice(desde, hasta).map((item: territorioInterface) => (
 											<DataTable.Row key={item.numero}
 												style={{
 													borderColor: theme.colors.primary,
-													...(!item.ultimaFecha && item.activo) && { backgroundColor: theme.colors.availableContainer, color: theme.colors.onAvailableContainer },
+													...(!item.ultimaFechaSalida && item.activo) && { backgroundColor: theme.colors.availableContainer, color: theme.colors.onAvailableContainer },
 													...esCaducado(item) && { backgroundColor: theme.colors.expiredContainer, color: theme.colors.onExpiredContainer },
 													...!item.activo && { backgroundColor: theme.colors.errorContainer, color: theme.colors.onErrorContainer },
 												}}
@@ -279,10 +302,10 @@ const Territorios = ({ offline, setOffline }: { offline: boolean, setOffline: Re
 										))}
 
 										<DataTable.Pagination
-											page={page}
-											numberOfPages={Math.ceil(territoriosList.length / territoriosPerPage)}
-											onPageChange={(page) => setPage(page)}
-											label={`${from + 1}-${to} of ${territoriosList.length}`}
+											page={pagina}
+											numberOfPages={Math.ceil(territoriosLista.length / territoriosPerPage)}
+											onPageChange={(pagina) => setPagina(pagina)}
+											label={`${desde + 1}-${hasta} of ${territoriosLista.length}`}
 											numberOfItemsPerPageList={numberOfItemsPerPageList}
 											numberOfItemsPerPage={territoriosPerPage}
 											onItemsPerPageChange={onItemsPerPageChange}

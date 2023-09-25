@@ -68,12 +68,12 @@ const EditarHistorial = ({ item, setUpdate, update, esEntreFechas, contieneFecha
 					await updateDoc(doc(db, "territorios", item.terID, 'historico', item.id), {
 						fechaEntrada: deleteField()
 					});
-					await updateDoc(doc(db, "territorios", item.terID), { ultimaFecha: Timestamp.fromDate(fechaSalida) });
+					await updateDoc(doc(db, "territorios", item.terID), { ultimaFechaSalida: Timestamp.fromDate(fechaSalida) });
 				}
 
 				if (!item.fechaEntrada && fechaEntrada) {
 					await updateDoc(doc(db, "territorios", item.terID), {
-						ultimaFecha: deleteField()
+						ultimaFechaSalida: deleteField()
 					});
 				}
 

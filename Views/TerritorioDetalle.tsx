@@ -95,8 +95,49 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 						? (<ActivityIndicator style={{ marginTop: '20%' }} animating={loadingTerritorio} color={theme.colors.primary} />)
 						: (
 							<>
+								<Text style={[globalCSS.titulo,
+								{
+									...(!territorioData.ultimaFechaSalida && territorioData.activo) && { color: theme.colors.strongPrimary },
+									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
+									...!territorioData.activo && { color: theme.colors.error },
+									marginTop: 15,
+									marginBottom: 0,
+								}
+								]}>Número {numero}{esCaducado(territorioData) && ' (¡CADUCADO!)'}</Text>
+								{territorioData.enlace !== '' ?
+									<Text
+										style={[globalCSS.subtitulo, { textAlign: 'center', color: theme.colors.linkText, marginBottom: 15 }]}
+										{...territorioData.enlace !== '' && { onPress: () => Linking.openURL(territorioData.enlace) }}
+									>
+										Enlace
+									</Text>
+									: <View style={{ marginBottom: 15 }}></View>
+								}
+								{territorioData.img?.url ?
+									(
+										<View>
+											<Image
+												resizeMode='cover'
+												style={{ width: '100%', height: 230, borderRadius: 15, marginVertical: 15 }}
+												source={{ uri: territorioData.img?.url }}
+												loadingIndicatorSource={require('../assets/simple_ajax.gif')}
+											/>
+										</View>
+									)
+									: <></>
+								}
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Barrio:</Text>
+								<Text style={globalCSS.texto}>{territorioData.barrio}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Descripción:</Text>
+								<Text style={globalCSS.texto}>{territorioData.descripcion === '' ? '-' : territorioData.descripcion}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Número de Viviendas:</Text>
+								<Text style={globalCSS.texto}>{territorioData.numViviendas === '' ? '-' : territorioData.numViviendas}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Tipo:</Text>
+								<Text style={globalCSS.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
+								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
+								<Text style={globalCSS.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
 								<Button
-									style={[globalCSS.boton, { marginBottom: 3 }]}
+									style={[globalCSS.boton, { marginBottom: 3, marginTop: 25 }]}
 									icon=""
 									buttonColor={'darkred'}
 									mode="contained"
@@ -130,7 +171,7 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 									<Text style={{ fontSize: 20, color: 'white', fontWeight: 'bold', paddingTop: 4 }}>Editar</Text>
 								</Button>
 								<Button
-									style={[globalCSS.boton, { marginBottom: 3 }]}
+									style={[globalCSS.boton, { marginBottom: 15 }]}
 									icon=""
 									buttonColor={theme.colors.secondaryContainer}
 									textColor={theme.colors.onSecondaryContainer}
@@ -140,47 +181,6 @@ const TerritorioDetalle = ({ route }: { route: any }) => {
 								>
 									<Text style={{ fontSize: 20, fontWeight: 'bold', paddingTop: 4 }}>{activo ? 'Dar de baja' : 'Reactivar'}</Text>
 								</Button>
-								<Text style={[globalCSS.titulo,
-								{
-									...(!territorioData.ultimaFecha && territorioData.activo) && { color: theme.colors.strongPrimary },
-									...esCaducado(territorioData) && { color: theme.colors.strongExpired },
-									...!territorioData.activo && { color: theme.colors.error },
-									marginTop: 15,
-									marginBottom: 0,
-								}
-								]}>Número {numero}{esCaducado(territorioData) && ' (¡CADUCADO!)'}</Text>
-								{territorioData.enlace !== '' ?
-									<Text
-										style={[globalCSS.subtitulo, { textAlign: 'center', color: theme.colors.linkText, marginBottom: 15 }]}
-										{...territorioData.enlace !== '' && { onPress: () => Linking.openURL(territorioData.enlace) }}
-									>
-										Enlace
-									</Text>
-									: <View style={{ marginBottom: 15 }}></View>
-								}
-								{territorioData.img?.url ?
-									(
-										<View>
-											<Image
-												resizeMode='cover'
-												style={{ width: '100%', height: 230, borderRadius: 15 }}
-												source={{ uri: territorioData.img?.url }}
-												loadingIndicatorSource={require('../assets/simple_ajax.gif')}
-											/>
-										</View>
-									)
-									: <></>
-								}
-								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Barrio:</Text>
-								<Text style={globalCSS.texto}>{territorioData.barrio}</Text>
-								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Descripción:</Text>
-								<Text style={globalCSS.texto}>{territorioData.descripcion === '' ? '-' : territorioData.descripcion}</Text>
-								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Número de Viviendas:</Text>
-								<Text style={globalCSS.texto}>{territorioData.numViviendas === '' ? '-' : territorioData.numViviendas}</Text>
-								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Tipo:</Text>
-								<Text style={globalCSS.texto}>{territorioData.negocios ? 'Negocios' : 'Normal'}</Text>
-								<Text style={[globalCSS.subSubtitulo, { marginBottom: 1 }]}>Dado de Baja:</Text>
-								<Text style={globalCSS.texto}>{territorioData.activo ? 'No' : 'Sí'}</Text>
 								<Historial historico={historico} loadingHistorico={loadingHistorico} update={update} setUpdate={setUpdate} territorioID={id} />
 							</>
 						)

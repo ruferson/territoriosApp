@@ -5,6 +5,7 @@ export interface territorioInterface {
 	'barrio': string,
 	'activo': boolean,
 	'negocios': boolean,
+	'uid': string,
 	'descripcion'?: string,
 	'numViviendas'?: string,
 	'enlace'?: string,
@@ -12,7 +13,17 @@ export interface territorioInterface {
 		path: string,
 		url: string
 	},
-	'uid'?: string,
-	'ultimaFecha'?: Timestamp,
+	'ultimaFechaSalida'?: Timestamp,
+	'ultimaFechaEntrega'?: Timestamp,
+	'id'?: string
+}
+
+export interface historicoInterface {
+	'campaña': boolean,
+	'fechaEntrada'?: Timestamp,
+	'fechaSalida': Timestamp,
+	'publicador': string,
+	'terID': string,
+	'uid': string,
 	'id'?: string
 }

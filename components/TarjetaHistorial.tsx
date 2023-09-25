@@ -24,7 +24,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, esEntreFechas, contieneFech
 			await deleteDoc(doc(db, "territorios", item.terID, 'historico', item.id));
 			if (!item.fechaEntrada) {
 				await updateDoc(doc(db, "territorios", item.terID), {
-					ultimaFecha: deleteField()
+					ultimaFechaSalida: deleteField()
 				});
 			}
 			setUpdate(update + 1)
@@ -42,7 +42,7 @@ const TarjetaHistorial = ({ item, update, setUpdate, esEntreFechas, contieneFech
 					fechaEntrada: nuevaFechaEntrada
 				});
 				await updateDoc(doc(db, "territorios", item.terID), {
-					ultimaFecha: deleteField()
+					ultimaFechaSalida: deleteField()
 				});
 				setAñadiendoFechaEntrada(false)
 				setUpdate(update + 1)
