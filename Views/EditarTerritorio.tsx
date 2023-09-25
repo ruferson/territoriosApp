@@ -27,8 +27,6 @@ const EditarTerritorio = ({ route }: { route: any }) => {
 	const [guardado, setGuardado] = useState(false);
 	const navigation = useNavigation();
 
-	console.log(territorioData.img?.url)
-
 	useEffect(() => navigation.addListener('beforeRemove', (e) => {
 		if (guardado) {
 			return;
